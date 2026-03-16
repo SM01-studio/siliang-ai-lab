@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Siliang AI LAB - 管理面板</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* 权限复选框样式 */
+        .permission-checkboxes {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        .permission-checkboxes label {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.25rem 0.5rem;
+            background: rgba(124, 58, 237, 0.1);
+            border-radius: var(--radius-sm);
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .permission-checkboxes label:hover {
+            background: rgba(124, 58, 237, 0.2);
+        }
+        .permission-checkboxes input[type="checkbox"] {
+            accent-color: var(--primary);
+            cursor: pointer;
+        }
+        .permission-checkboxes .admin-note {
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            font-style: italic;
+        }
+        .table {
+            min-width: 900px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container header-content">
+            <a href="dashboard.html" class="logo">
+                <div class="logo-icon">S</div>
+                <span>Siliang AI LAB</span>
+            </a>
+
+            <nav class="nav">
+                <a href="dashboard.html" class="nav-link">应用</a>
+                <a href="admin.html" class="nav-link">管理</a>
+            </nav>
+
+            <div class="user-menu">
+                <span id="user-greeting">你好, 管理员</span>
+                <div class="user-avatar" id="user-avatar">A</div>
+                <button class="btn btn-sm btn-secondary" id="logout-btn">登出</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container dashboard">
+        <section class="welcome-section">
+            <h1>管理面板</h1>
+            <p>用户管理与系统设置</p>
+        </section>
+
+        <!-- 用户管理 -->
+        <section class="admin-section">
+            <h2>用户管理</h2>
+            <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1rem;">
+                💡 管理员默认拥有所有应用权限，普通用户需要手动分配应用权限
+            </p>
+            <div class="admin-actions">
+                <button class="btn btn-primary" onclick="openCreateModal()">+ 创建用户</button>
+            </div>
+            <div class="table-container" style="overflow-x: auto;">
+                <table class="table" id="users-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>用户名</th>
+                            <th>邮箱</th>
+                            <th>角色</th>
+                            <th>状态</th>
+                            <th>应用权限</th>
+                            <th>有效期</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="users-tbody">
+                        <tr>
+                            <td colspan="8" class="text-center">
+                                <div class="spinner" style="margin: 1rem auto;"></div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <!-- Create User Modal -->
+    <div class="modal-overlay" id="create-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">创建用户</h3>
+                <button class="modal-close" onclick="closeCreateModal()">×</button>
+            </div>
+            <form id="create-form">
+                <div class="form-group">
+                    <label class="form-label">用户名</label>
+                    <input type="text" class="form-input" id="create-username" placeholder="请输入用户名" required minlength="3">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">邮箱</label>
+                    <input type="email" class="form-input" id="create-email" placeholder="请输入邮箱" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">密码</label>
+                    <input type="password" class="form-input" id="create-password" placeholder="请输入密码" required minlength="6">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">角色</label>
+                    <select class="form-input" id="create-role">
+                        <option value="user">普通用户</option>
+                        <option value="admin">管理员</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">有效期</label>
+                    <div style="display: flex; gap: 0.5rem; align-items: center;">
+                        <input type="date" class="form-input" id="create-expiry-start" style="flex: 1;">
+                        <span style="color: var(--text-muted);">至</span>
+                        <input type="date" class="form-input" id="create-expiry-end" style="flex: 1;">
+                    </div>
+                    <p style="color: var(--text-muted); font-size: 0.8rem; margin-top: 0.5rem;">留空表示永久有效</p>
+                </div>
+                <div class="form-error hidden" id="create-error"></div>
+                <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+                    <button type="button" class="btn btn-secondary" onclick="closeCreateModal()" style="flex: 1;">取消</button>
+                    <button type="submit" class="btn btn-primary" style="flex: 1;">创建</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script>
+        // 全局变量：所有应用列表
+        let allApps = [];
+
+        // Modal 控制
+        function openCreateModal() {
+            document.getElementById('create-modal').classList.add('active');
+            // 设置默认日期
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('create-expiry-start').value = today;
+        }
+
+        function closeCreateModal() {
+            document.getElementById('create-modal').classList.remove('active');
+            document.getElementById('create-form').reset();
+            document.getElementById('create-error').classList.add('hidden');
+        }
+
+        // 初始化
+        async function init() {
+            const user = await requireAdmin();
+            if (!user) return;
+
+            document.getElementById('user-greeting').textContent = `你好, ${user.username}`;
+            document.getElementById('user-avatar').textContent = user.username.charAt(0).toUpperCase();
+
+            // 先加载应用列表，再加载用户
+            await loadApps();
+            loadUsers();
+        }
+
+        // 加载所有应用
+        async function loadApps() {
+            try {
+                const { apps } = await AdminAPI.getAllApps();
+                allApps = apps;
+            } catch (err) {
+                console.error('加载应用失败:', err);
+                allApps = [];
+            }
+        }
+
+        // 加载用户列表
+        async function loadUsers() {
+            const tbody = document.getElementById('users-tbody');
+
+            try {
+                const { users } = await AdminAPI.getUsers();
+
+                // 获取每个用户的权限
+                const usersWithPermissions = await Promise.all(users.map(async (user) => {
+                    if (user.role === 'admin') {
+                        return { ...user, permissions: allApps.map(a => a.id) };
+                    }
+                    try {
+                        const { permissions } = await AdminAPI.getUserPermissions(user.id);
+                        return { ...user, permissions };
+                    } catch (err) {
+                        return { ...user, permissions: [] };
+                    }
+                }));
+
+                tbody.innerHTML = usersWithPermissions.map(user => `
+                    <tr>
+                        <td>${user.id}</td>
+                        <td>${user.username}</td>
+                        <td>${user.email}</td>
+                        <td>
+                            <span class="badge badge-${user.role}">${user.role === 'admin' ? '管理员' : '用户'}</span>
+                        </td>
+                        <td>
+                            <span class="badge badge-${user.is_active ? 'active' : 'inactive'}">${user.is_active ? '正常' : '禁用'}</span>
+                        </td>
+                        <td>
+                            ${renderPermissionCheckboxes(user)}
+                        </td>
+                        <td>${formatExpiry(user.expires_at)}</td>
+                        <td>
+                            <button class="btn btn-sm btn-secondary" onclick="toggleUser(${user.id})">
+                                ${user.is_active ? '禁用' : '启用'}
+                            </button>
+                            <button class="btn btn-sm btn-outline" onclick="deleteUser(${user.id}, '${user.username}')">
+                                删除
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (err) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="8" class="text-center" style="color: #EF4444;">
+                            加载失败: ${err.message}
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+
+        // 渲染权限复选框
+        function renderPermissionCheckboxes(user) {
+            if (user.role === 'admin') {
+                return `<span class="admin-note">管理员拥有所有权限</span>`;
+            }
+
+            if (allApps.length === 0) {
+                return `<span style="color: var(--text-muted);">暂无可用应用</span>`;
+            }
+
+            return `
+                <div class="permission-checkboxes" data-user-id="${user.id}">
+                    ${allApps.map(app => `
+                        <label>
+                            <input type="checkbox"
+                                   value="${app.id}"
+                                   ${user.permissions.includes(app.id) ? 'checked' : ''}
+                                   onchange="updatePermission(${user.id}, ${app.id}, this.checked)">
+                            ${app.name}
+                        </label>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        // 更新单个权限
+        async function updatePermission(userId, appId, checked) {
+            try {
+                // 获取当前用户的所有权限
+                const checkboxes = document.querySelectorAll(`.permission-checkboxes[data-user-id="${userId}"] input[type="checkbox"]`);
+                const appIds = Array.from(checkboxes)
+                    .filter(cb => cb.checked)
+                    .map(cb => parseInt(cb.value));
+
+                await AdminAPI.setUserPermissions(userId, appIds);
+                showToast('权限已更新');
+            } catch (err) {
+                showToast(err.message, 'error');
+                // 恢复之前的状态
+                loadUsers();
+            }
+        }
+
+        // 格式化日期
+        function formatDate(dateStr) {
+            if (!dateStr) return '-';
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('zh-CN');
+        }
+
+        // 格式化有效期
+        function formatExpiry(dateStr) {
+            if (!dateStr) return '永久';
+            const date = new Date(dateStr);
+            const now = new Date();
+            if (date < now) {
+                return `<span style="color: #EF4444;">已过期</span>`;
+            }
+            return date.toLocaleDateString('zh-CN');
+        }
+
+        // 切换用户状态
+        async function toggleUser(userId) {
+            try {
+                await AdminAPI.toggleUser(userId);
+                showToast('状态已更新');
+                loadUsers();
+            } catch (err) {
+                showToast(err.message, 'error');
+            }
+        }
+
+        // 删除用户
+        async function deleteUser(userId, username) {
+            if (!confirm(`确定要删除用户 "${username}" 吗？此操作不可恢复。`)) {
+                return;
+            }
+
+            try {
+                await AdminAPI.deleteUser(userId);
+                showToast('用户已删除');
+                loadUsers();
+            } catch (err) {
+                showToast(err.message, 'error');
+            }
+        }
+
+        // 创建用户
+        document.getElementById('create-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const username = document.getElementById('create-username').value;
+            const email = document.getElementById('create-email').value;
+            const password = document.getElementById('create-password').value;
+            const role = document.getElementById('create-role').value;
+            const expiryStart = document.getElementById('create-expiry-start').value;
+            const expiryEnd = document.getElementById('create-expiry-end').value;
+            const errorEl = document.getElementById('create-error');
+
+            let expiresAt = null;
+            if (expiryEnd) {
+                expiresAt = new Date(expiryEnd + 'T23:59:59').toISOString();
+            }
+
+            errorEl.classList.add('hidden');
+
+            try {
+                await AdminAPI.createUser(username, email, password, role, expiresAt);
+                showToast('用户创建成功');
+                closeCreateModal();
+                loadUsers();
+            } catch (err) {
+                errorEl.textContent = err.message;
+                errorEl.classList.remove('hidden');
+            }
+        });
+
+        // 登出
+        document.getElementById('logout-btn').addEventListener('click', async () => {
+            await AuthAPI.logout();
+            showToast('已登出');
+            window.location.href = '/index.html';
+        });
+
+        // 启动
+        init();
+    </script>
+</body>
+</html>
