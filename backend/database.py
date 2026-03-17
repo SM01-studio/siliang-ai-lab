@@ -355,6 +355,18 @@ class App:
         return dict(app) if app else None
 
     @staticmethod
+    def toggle_active(app_id):
+        """切换应用激活状态"""
+        conn = get_db()
+        cursor = conn.cursor()
+        cursor.execute(
+            'UPDATE apps SET is_active = NOT is_active WHERE id = ?',
+            (app_id,)
+        )
+        conn.commit()
+        conn.close()
+
+    @staticmethod
     def get_for_user(user_id, is_admin=False):
         """获取用户可访问的应用（管理员可访问所有）"""
         conn = get_db()

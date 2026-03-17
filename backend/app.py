@@ -325,6 +325,19 @@ def admin_get_all_apps():
     return jsonify({'apps': apps})
 
 
+@app.route('/api/admin/apps/<int:app_id>/toggle', methods=['POST'])
+def admin_toggle_app(app_id):
+    """启用/禁用应用（管理员）"""
+    token = request.headers.get('Authorization', '').replace('Bearer ', '')
+    session = Session.get_by_token(token)
+
+    if not session or session['role'] != 'admin':
+        return jsonify({'error': '无权限'}), 403
+
+    App.toggle_active(app_id)
+    return jsonify({'message': '应用状态已更新'})
+
+
 # ==================== 文件管理 API ====================
 
 import requests
