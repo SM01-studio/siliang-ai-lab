@@ -57,7 +57,21 @@
 
         .apps-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* 单卡片时居中，双卡片时左对齐 */
+        .apps-grid:has(.app-card:only-child) {
+            display: flex;
+            justify-content: center;
+        }
+
+        .apps-grid:has(.app-card:nth-child(2):last-child) {
+            display: flex;
+            justify-content: flex-start;
             gap: 1.5rem;
         }
 
@@ -68,6 +82,12 @@
             overflow: hidden;
             transition: var(--transition);
             cursor: pointer;
+            /* 固定尺寸 4:3 比例 */
+            width: 100%;
+            max-width: 380px;
+            aspect-ratio: 4 / 3;
+            display: flex;
+            flex-direction: column;
         }
 
         .app-card:hover {
@@ -78,30 +98,34 @@
 
         .app-card-image {
             width: 100%;
-            height: 180px;
+            /* 图片区域占卡片高度的 60% */
+            height: 60%;
             object-fit: cover;
             border-bottom: 1px solid var(--border);
         }
 
         .app-card-content {
-            padding: 1.25rem;
+            padding: 0.875rem 1rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
         }
 
         .app-card-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 0.75rem;
+            margin-bottom: 0.35rem;
         }
 
         .app-card-title {
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-weight: 600;
         }
 
         .app-card-status {
-            font-size: 0.7rem;
-            padding: 0.25rem 0.6rem;
+            font-size: 0.65rem;
+            padding: 0.2rem 0.5rem;
             border-radius: 100px;
             font-weight: 500;
         }
@@ -113,22 +137,28 @@
 
         .app-card-desc {
             color: var(--text-muted);
-            font-size: 0.85rem;
-            line-height: 1.6;
-            margin-bottom: 1rem;
+            font-size: 0.75rem;
+            line-height: 1.5;
+            margin-bottom: 0.5rem;
+            /* 限制描述文字为2行 */
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
         }
 
         .app-card-footer {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding-top: 0.75rem;
+            padding-top: 0.5rem;
             border-top: 1px solid var(--border);
+            margin-top: auto;
         }
 
         .app-card-link {
             color: var(--primary-light);
-            font-size: 0.85rem;
+            font-size: 0.75rem;
             font-weight: 500;
             display: flex;
             align-items: center;
@@ -137,6 +167,25 @@
 
         .app-card:hover .app-card-link {
             color: var(--secondary);
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 1024px) {
+            .apps-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .app-card {
+                max-width: 360px;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .apps-grid {
+                grid-template-columns: 1fr;
+            }
+            .app-card {
+                max-width: 100%;
+            }
         }
     </style>
 </head>
