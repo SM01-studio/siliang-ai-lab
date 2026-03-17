@@ -187,10 +187,12 @@
 
     <script src="js/api.js"></script>
     <script>
-        // 粒子效果
+        // 粒子效果 - 优化版
         const canvas = document.getElementById('particles-canvas');
         const ctx = canvas.getContext('2d');
         let particles = [];
+        let animationId = null;
+        let isAnimating = true;
 
         function resizeCanvas() {
             canvas.width = window.innerWidth;
@@ -199,7 +201,11 @@
 
         function createParticles() {
             particles = [];
-            const particleCount = Math.floor((canvas.width * canvas.height) / 10000);
+            // 限制粒子数量，避免性能问题
+            const maxParticles = 80;
+            const calculatedCount = Math.floor((canvas.width * canvas.height) / 15000);
+            const particleCount = Math.min(calculatedCount, maxParticles);
+
             for (let i = 0; i < particleCount; i++) {
                 particles.push({
                     x: Math.random() * canvas.width,
@@ -213,6 +219,8 @@
         }
 
         function drawParticles() {
+            if (!isAnimating) return;
+
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             particles.forEach(p => {
                 ctx.beginPath();
@@ -228,8 +236,22 @@
                     p.x = Math.random() * canvas.width;
                 }
             });
-            requestAnimationFrame(drawParticles);
+            animationId = requestAnimationFrame(drawParticles);
         }
+
+        // 页面不可见时暂停动画，节省资源
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                isAnimating = false;
+                if (animationId) {
+                    cancelAnimationFrame(animationId);
+                    animationId = null;
+                }
+            } else {
+                isAnimating = true;
+                drawParticles();
+            }
+        });
 
         window.addEventListener('resize', () => {
             resizeCanvas();
@@ -274,7 +296,7 @@
 
                 grid.innerHTML = apps.map(app => `
                     <div class="app-card" onclick="openApp('${app.url}')">
-                        <img src="${app.image_url || 'images/placeholder.png'}" alt="${app.name}" class="app-card-image">
+                        <img src="${app.image_url || 'images/placeholder.png'}" alt="${app.name}" class="app-card-image" loading="lazy">
                         <div class="app-card-content">
                             <div class="app-card-header">
                                 <h3 class="app-card-title">${app.name}</h3>
