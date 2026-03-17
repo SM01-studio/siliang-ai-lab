@@ -1,0 +1,14 @@
+[Unit]
+Description=Siliang AI LAB - Main Backend (Port 5000)
+After=network.target
+
+[Service]
+User=root
+WorkingDirectory=/www/siliang-ai-lab/backend
+ExecStart=/www/siliang-ai-lab/venv/bin/gunicorn --bind 127.0.0.1:5000 --workers 2 --timeout 120 app:app
+Restart=always
+RestartSec=5
+Environment=PYTHONUNBUFFERED=1
+
+[Install]
+WantedBy=multi-user.target

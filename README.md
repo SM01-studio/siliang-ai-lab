@@ -1,97 +1,64 @@
 # Siliang AI LAB
 
-**思量 AI 实验室** - AI 应用统一门户平台
-
-## 项目简介
-
-Siliang AI LAB 是一个 AI 应用主门户系统，提供：
-
-- 用户登录/注册功能
-- 用户管理（管理员 + 普通用户）
-- 应用仪表板（管理多个 AI Web 应用）
-- 应用权限管理系统
-
-## 在线访问
-
-| 服务 | 地址 |
-|------|------|
-| 主门户 | https://siliang.cfd |
-| AI Writer | https://writer.siliang.cfd |
-| API 服务 | https://api.siliang.cfd |
-
-## 功能截图
-
-![Siliang AI LAB 截图](./images/screenshot.png)
-
-## 技术栈
-
-| 层级 | 技术 |
-|------|------|
-| 前端 | HTML5 + CSS3 + Vanilla JavaScript |
-| 后端 | Python + Flask |
-| 数据库 | SQLite |
-| 部署 | Vercel (前端) + 阿里云 (后端) |
-
-## 项目结构
-
-```
-siliang-ai-lab/
-├── web/                    # 前端文件
-│   ├── index.html          # 首页/登录
-│   ├── dashboard.html      # 用户仪表板
-│   ├── admin.html          # 管理面板
-│   ├── css/
-│   ├── js/
-│   └── images/
-├── backend/                # Flask 后端
-│   ├── app.py              # 主应用
-│   └── database.py         # 数据库模型
-├── deploy/                 # 部署配置
-│   ├── nginx.conf
-│   └── *.service
-└── LOG.md                  # 开发日志
-```
+AI 应用管理平台 - 用户登录、应用仪表板、管理员面板
 
 ## 快速开始
 
-### 本地开发
+### 1. 安装依赖
 
 ```bash
-# 克隆仓库
-git clone https://github.com/SM01-studio/siliang-ai-lab.git
-cd siliang-ai-lab
-
-# 安装后端依赖
 cd backend
-pip install -r ../deploy/requirements.txt
-
-# 启动后端
-python app.py
-
-# 访问前端
-# 打开浏览器访问 http://localhost:5000
+pip install -r ../requirements.txt
 ```
 
-### 默认管理员账号
+### 2. 初始化数据库
 
-- 邮箱：`admin@siliang.cfd`
-- 密码：`admin123`
+```bash
+python seed.py
+```
 
-## 权限系统
+### 3. 启动服务
 
-| 用户类型 | 默认权限 | 说明 |
-|---------|---------|------|
-| 管理员 | 所有应用 | 无需手动分配 |
-| 普通用户 | 无 | 必须由管理员分配 |
+```bash
+python app.py
+```
 
-## 相关项目
+访问 http://localhost:5000
 
-- [AI Article Writer](https://github.com/SM01-studio/AI-article-writer) - AI 公众号文章自动化写作助手
+## 默认账户
 
-## License
+- **邮箱**: admin@siliang.cfd
+- **密码**: admin123
 
-MIT License
+## 目录结构
 
----
+```
+siliang-ai-lab/
+├── web/                 # 前端
+│   ├── css/
+│   ├── js/
+│   ├── images/
+│   ├── index.html       # 登录/注册
+│   ├── dashboard.html   # 仪表板
+│   └── admin.html       # 管理面板
+├── backend/             # 后端
+│   ├── app.py           # Flask 主程序
+│   ├── database.py      # 数据库模型
+│   └── seed.py          # 初始化脚本
+├── data/                # SQLite 数据库
+└── LOG.md               # 开发日志
+```
 
-© 2026 Siliang AI LAB
+## 功能
+
+- [x] 用户注册/登录
+- [x] 密码找回
+- [x] 应用仪表板
+- [x] 管理员用户管理
+- [x] Glassmorphism UI
+
+## 部署
+
+生产环境部署到：
+- 前端: Vercel (https://lab.siliang.cfd)
+- 后端: 阿里云服务器 (https://api.siliang.cfd)
