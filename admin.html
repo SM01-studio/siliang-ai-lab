@@ -484,7 +484,7 @@
             `;
 
             try {
-                const response = await fetch(`/api/admin/files?app=${appName}`, {
+                const response = await fetch(`https://api.siliang.cfd/api/admin/files?app=${appName}`, {
                     headers: {
                         'Authorization': `Bearer ${TokenManager.get()}`
                     }
@@ -582,7 +582,7 @@
             const appName = document.getElementById('file-app-select').value;
 
             try {
-                const response = await fetch(`/api/admin/files/${appName}/${sessionId}`, {
+                const response = await fetch(`https://api.siliang.cfd/api/admin/files/${appName}/${sessionId}`, {
                     method: 'DELETE',
                     headers: {
                         'Authorization': `Bearer ${TokenManager.get()}`
@@ -611,7 +611,7 @@
             const appName = document.getElementById('file-app-select').value;
 
             try {
-                const response = await fetch('/api/admin/files/batch-delete', {
+                const response = await fetch('https://api.siliang.cfd/api/admin/files/batch-delete', {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${TokenManager.get()}`,
