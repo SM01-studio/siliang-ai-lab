@@ -581,10 +581,15 @@
             }
         });
 
-        // 检查登录状态
-        checkAuth().then(user => {
-            if (user) window.location.href = '/dashboard.html';
-        });
+        // 检查登录状态（但不从子应用重定向时自动跳转）
+        const urlParams = new URLSearchParams(window.location.search);
+        const redirectFrom = urlParams.get('from');
+
+        if (redirectFrom !== 'subapp') {
+            checkAuth().then(user => {
+                if (user) window.location.href = '/dashboard.html';
+            });
+        }
 
         // URL 密码重置
         const urlParams = new URLSearchParams(window.location.search);
