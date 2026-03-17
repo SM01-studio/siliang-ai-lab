@@ -482,18 +482,19 @@ def seed_apps():
             },
             {
                 'name': 'ArchiAudit',
-                'description': 'AI 住宅建筑平面图专项审核软件，智能识别并审核建筑图纸。',
+                'description': 'AI 住宅建筑平面图专项审核软件，智能识别并审核建筑图纸。（开发中）',
                 'image_url': '/images/archiaudit.png',
                 'url': 'https://archi.siliang.cfd',
+                'is_active': 0,  # 尚未上线
                 'sort_order': 2
             }
         ]
 
         for app in sample_apps:
             cursor.execute('''
-                INSERT INTO apps (name, description, image_url, url, sort_order)
-                VALUES (?, ?, ?, ?, ?)
-            ''', (app['name'], app['description'], app['image_url'], app['url'], app['sort_order']))
+                INSERT INTO apps (name, description, image_url, url, is_active, sort_order)
+                VALUES (?, ?, ?, ?, ?, ?)
+            ''', (app['name'], app['description'], app['image_url'], app['url'], app.get('is_active', 1), app['sort_order']))
 
         conn.commit()
         print(f'已添加 {len(sample_apps)} 个示例应用')
