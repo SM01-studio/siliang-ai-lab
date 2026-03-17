@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CLD-PDDM AI LAB - AI 创新实验平台</title>
+    <!-- v2 -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
@@ -592,7 +593,6 @@
         }
 
         // URL 密码重置
-        const urlParams = new URLSearchParams(window.location.search);
         const resetToken = urlParams.get('token');
         if (resetToken) {
             openAuthModal('login');
