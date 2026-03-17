@@ -356,6 +356,52 @@ def get_synced_session(session_id: str) -> dict:
 
 ---
 
+## 2026-03-17 待解决问题：ArchiAudit 导致浏览器崩溃
+
+### 问题描述
+在 Dashboard 页面点击 ArchiAudit 应用卡片时，会导致：
+1. 页面闪烁、卡片跳跃
+2. 白屏
+3. 浏览器死机
+
+### 原因分析
+1. ArchiAudit 的 URL `https://archi.siliang.cfd` 尚未部署
+2. 数据库中 `is_active = 1`（激活状态），用户可以看到并点击
+3. 点击不存在的域名可能触发浏览器异常行为
+
+### 修复方案
+1. ✅ 已修改 `database.py` seed 函数，将 ArchiAudit 默认设为 `is_active = 0`
+2. ✅ 已添加 `/api/admin/apps/<id>/toggle` API 端点
+3. ⏳ **待执行**：在生产数据库中将 ArchiAudit 设为未激活
+
+### 需要在服务器上执行的命令
+```bash
+cd /root/siliang-ai-lab/backend
+git pull
+# 更新数据库
+sqlite3 siliang.db "UPDATE apps SET is_active = 0 WHERE name = 'ArchiAudit';"
+# 验证
+sqlite3 siliang.db "SELECT id, name, is_active FROM apps;"
+# 重启服务
+pkill -f "python.*app.py" || true
+nohup python3 app.py > /root/backend.log 2>&1 &
+```
+
+### 已修复的其他问题（今日）
+1. ✅ `index.html` 重复声明 `const urlParams` 导致 JavaScript 错误，登录无效
+2. ✅ 粒子效果恢复正常
+3. ✅ 品牌更名为 "CLD-PDDM AI LAB"
+
+### 代码已推送
+- commit: `fix: Mark ArchiAudit as inactive until deployed`
+- commit: `feat: Add admin API to toggle app status`
+
+### SSH 连接问题
+- 当前无法通过 SSH 连接服务器（端口 22 被拒绝）
+- 需要通过阿里云控制台或宝塔面板执行命令
+
+---
+
 ## 服务器信息
 
 | 项目 | 值 |
