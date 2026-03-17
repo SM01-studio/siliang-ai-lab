@@ -37,7 +37,7 @@
         }
 
         .hero-right {
-            flex: 0 0 380px;
+            flex: 0 0 320px;
         }
 
         .hero-projects {
@@ -51,10 +51,11 @@
             backdrop-filter: blur(20px);
             border: 1px solid rgba(124, 58, 237, 0.15);
             border-radius: var(--radius-lg);
-            padding: 1rem;
+            overflow: hidden;
             display: flex;
             flex-direction: column;
-            gap: 0.75rem;
+            /* 竖向卡片 9:16 比例 */
+            aspect-ratio: 9 / 16;
             transition: var(--transition);
             cursor: default;
         }
@@ -67,15 +68,15 @@
 
         .hero-project-image {
             width: 100%;
-            height: 140px;
-            border-radius: var(--radius-sm);
+            /* 图片区域占卡片高度的 75% */
+            height: 75%;
             object-fit: cover;
+            object-position: center;
         }
 
         .hero-project-image-placeholder {
             width: 100%;
-            height: 140px;
-            border-radius: var(--radius-sm);
+            height: 75%;
             background: linear-gradient(135deg, rgba(124, 58, 237, 0.3), rgba(6, 182, 212, 0.3));
             display: flex;
             align-items: center;
@@ -84,13 +85,17 @@
         }
 
         .hero-project-info {
+            padding: 0.75rem 1rem;
             flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
 
         .hero-project-title {
             font-weight: 600;
-            font-size: 0.95rem;
-            margin-bottom: 0.35rem;
+            font-size: 0.9rem;
+            margin-bottom: 0.25rem;
             display: flex;
             align-items: center;
             gap: 0.5rem;
@@ -98,8 +103,13 @@
 
         .hero-project-desc {
             color: var(--text-secondary);
-            font-size: 0.8rem;
-            line-height: 1.5;
+            font-size: 0.75rem;
+            line-height: 1.4;
+            /* 限制为2行 */
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
         }
 
         .hero-project-status {
@@ -158,6 +168,14 @@
             }
             .hero-actions {
                 justify-content: center;
+            }
+            /* 小屏幕时卡片并排显示 */
+            .hero-projects {
+                flex-direction: row;
+                justify-content: center;
+            }
+            .hero-project-card {
+                max-width: 220px;
             }
         }
     </style>
