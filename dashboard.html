@@ -82,10 +82,10 @@
             overflow: hidden;
             transition: var(--transition);
             cursor: pointer;
-            /* 固定尺寸 4:3 比例 */
+            /* 固定尺寸 3:4 比例（竖向） */
             width: 100%;
-            max-width: 380px;
-            aspect-ratio: 4 / 3;
+            max-width: 320px;
+            aspect-ratio: 3 / 4;
             display: flex;
             flex-direction: column;
         }
@@ -98,9 +98,10 @@
 
         .app-card-image {
             width: 100%;
-            /* 图片区域占卡片高度的 60% */
-            height: 60%;
+            /* 图片区域占卡片高度的 70% */
+            height: 70%;
             object-fit: cover;
+            object-position: center;
             border-bottom: 1px solid var(--border);
         }
 
