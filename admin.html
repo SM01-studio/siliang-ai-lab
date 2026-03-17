@@ -38,6 +38,27 @@
         .table {
             min-width: 900px;
         }
+        /* 标签页按钮激活状态 */
+        .tab-btn.active {
+            color: var(--primary) !important;
+            border-bottom-color: var(--primary) !important;
+            font-weight: 600;
+        }
+        .tab-btn:hover {
+            background: rgba(124, 58, 237, 0.05);
+        }
+        /* 批量删除按钮 */
+        .btn-danger {
+            background: #EF4444;
+            color: white;
+        }
+        .btn-danger:hover:not(:disabled) {
+            background: #DC2626;
+        }
+        .btn-danger:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
     </style>
 </head>
 <body>
@@ -69,8 +90,14 @@
             <p>用户管理与系统设置</p>
         </section>
 
+        <!-- 标签页导航 -->
+        <div class="tabs" style="display: flex; gap: 0.5rem; margin-bottom: 1.5rem; border-bottom: 2px solid var(--border-color); padding-bottom: 0;">
+            <button class="tab-btn active" onclick="switchTab('users')" id="tab-users" style="padding: 0.75rem 1.5rem; border: none; background: none; cursor: pointer; font-size: 1rem; border-bottom: 3px solid transparent; margin-bottom: -2px; transition: all 0.2s;">用户管理</button>
+            <button class="tab-btn" onclick="switchTab('files')" id="tab-files" style="padding: 0.75rem 1.5rem; border: none; background: none; cursor: pointer; font-size: 1rem; border-bottom: 3px solid transparent; margin-bottom: -2px; transition: all 0.2s; color: var(--text-muted);">文件管理</button>
+        </div>
+
         <!-- 用户管理 -->
-        <section class="admin-section">
+        <section class="admin-section" id="section-users">
             <h2>用户管理</h2>
             <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1rem;">
                 💡 管理员默认拥有所有应用权限，普通用户需要手动分配应用权限
@@ -95,6 +122,49 @@
                     <tbody id="users-tbody">
                         <tr>
                             <td colspan="8" class="text-center">
+                                <div class="spinner" style="margin: 1rem auto;"></div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- 文件管理 -->
+        <section class="admin-section" id="section-files" style="display: none;">
+            <h2>文件管理</h2>
+            <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1rem;">
+                💡 管理各应用程序生成的文件，支持下载和删除
+            </p>
+
+            <!-- 应用选择 -->
+            <div style="display: flex; gap: 1rem; margin-bottom: 1rem; align-items: center;">
+                <label style="font-weight: 500;">选择应用:</label>
+                <select id="file-app-select" class="form-input" style="width: auto; min-width: 200px;" onchange="loadFiles()">
+                    <option value="ai-writer">AI Article Writer</option>
+                    <!-- 未来可添加更多应用 -->
+                </select>
+                <button class="btn btn-secondary" onclick="loadFiles()">🔄 刷新</button>
+                <button class="btn btn-danger" id="batch-delete-btn" onclick="batchDeleteFiles()" disabled style="margin-left: auto;">🗑️ 批量删除选中</button>
+            </div>
+
+            <!-- 文件列表 -->
+            <div class="table-container" style="overflow-x: auto;">
+                <table class="table" id="files-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 40px;"><input type="checkbox" id="select-all-files" onchange="toggleSelectAll()"></th>
+                            <th>会话ID</th>
+                            <th>主题</th>
+                            <th>文件数</th>
+                            <th>总大小</th>
+                            <th>创建时间</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="files-tbody">
+                        <tr>
+                            <td colspan="7" class="text-center">
                                 <div class="spinner" style="margin: 1rem auto;"></div>
                             </td>
                         </tr>
@@ -371,6 +441,212 @@
             showToast('已登出');
             window.location.href = '/index.html';
         });
+
+        // ==================== 标签页切换 ====================
+
+        function switchTab(tab) {
+            // 更新标签按钮状态
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+                btn.style.borderBottomColor = 'transparent';
+                btn.style.color = 'var(--text-muted)';
+            });
+            const activeBtn = document.getElementById(`tab-${tab}`);
+            activeBtn.classList.add('active');
+            activeBtn.style.borderBottomColor = 'var(--primary)';
+            activeBtn.style.color = 'var(--text-primary)';
+
+            // 显示对应区域
+            document.getElementById('section-users').style.display = tab === 'users' ? 'block' : 'none';
+            document.getElementById('section-files').style.display = tab === 'files' ? 'block' : 'none';
+
+            // 加载文件列表
+            if (tab === 'files') {
+                loadFiles();
+            }
+        }
+
+        // ==================== 文件管理 ====================
+
+        let selectedFiles = new Set();
+
+        async function loadFiles() {
+            const tbody = document.getElementById('files-tbody');
+            const appSelect = document.getElementById('file-app-select');
+            const appName = appSelect.value;
+
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="7" class="text-center">
+                        <div class="spinner" style="margin: 1rem auto;"></div>
+                    </td>
+                </tr>
+            `;
+
+            try {
+                const response = await fetch(`/api/admin/files?app=${appName}`, {
+                    headers: {
+                        'Authorization': `Bearer ${TokenManager.get()}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('加载文件列表失败');
+                }
+
+                const { sessions, total } = await response.json();
+                selectedFiles.clear();
+                updateBatchDeleteBtn();
+
+                if (sessions.length === 0) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="7" class="text-center" style="color: var(--text-muted); padding: 2rem;">
+                                暂无文件
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+
+                tbody.innerHTML = sessions.map(session => `
+                    <tr>
+                        <td><input type="checkbox" class="file-checkbox" data-id="${session.session_id}" onchange="toggleFileSelect('${session.session_id}')"></td>
+                        <td><code style="font-size: 0.8rem;">${session.session_id}</code></td>
+                        <td style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${session.topic}">${session.topic}</td>
+                        <td>${session.files_count} 个</td>
+                        <td>${session.total_size_formatted}</td>
+                        <td>${formatDate(session.created_at)}</td>
+                        <td>
+                            <button class="btn btn-sm btn-secondary" onclick="downloadSession('${session.session_id}')" title="下载">📥</button>
+                            <button class="btn btn-sm btn-outline" onclick="deleteSession('${session.session_id}', '${session.topic}')" title="删除">🗑️</button>
+                        </td>
+                    </tr>
+                `).join('');
+
+            } catch (err) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="text-center" style="color: #EF4444;">
+                            加载失败: ${err.message}
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+
+        function toggleFileSelect(sessionId) {
+            if (selectedFiles.has(sessionId)) {
+                selectedFiles.delete(sessionId);
+            } else {
+                selectedFiles.add(sessionId);
+            }
+            updateBatchDeleteBtn();
+        }
+
+        function toggleSelectAll() {
+            const selectAll = document.getElementById('select-all-files');
+            const checkboxes = document.querySelectorAll('.file-checkbox');
+
+            checkboxes.forEach(cb => {
+                const sessionId = cb.dataset.id;
+                if (selectAll.checked) {
+                    selectedFiles.add(sessionId);
+                    cb.checked = true;
+                } else {
+                    selectedFiles.delete(sessionId);
+                    cb.checked = false;
+                }
+            });
+            updateBatchDeleteBtn();
+        }
+
+        function updateBatchDeleteBtn() {
+            const btn = document.getElementById('batch-delete-btn');
+            btn.disabled = selectedFiles.size === 0;
+        }
+
+        async function downloadSession(sessionId) {
+            const appName = document.getElementById('file-app-select').value;
+            // 构建下载链接
+            if (appName === 'ai-writer') {
+                window.open(`https://api.siliang.cfd/api/writer/download/all/${sessionId}`, '_blank');
+            }
+        }
+
+        async function deleteSession(sessionId, topic) {
+            if (!confirm(`确定要删除 "${topic}" 吗？\n此操作将删除所有相关文件，不可恢复！`)) {
+                return;
+            }
+
+            const appName = document.getElementById('file-app-select').value;
+
+            try {
+                const response = await fetch(`/api/admin/files/${appName}/${sessionId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${TokenManager.get()}`
+                    }
+                });
+
+                if (!response.ok) {
+                    const data = await response.json();
+                    throw new Error(data.error || '删除失败');
+                }
+
+                showToast('删除成功');
+                loadFiles();
+            } catch (err) {
+                showToast(err.message, 'error');
+            }
+        }
+
+        async function batchDeleteFiles() {
+            if (selectedFiles.size === 0) return;
+
+            if (!confirm(`确定要删除选中的 ${selectedFiles.size} 个会话吗？\n此操作将删除所有相关文件，不可恢复！`)) {
+                return;
+            }
+
+            const appName = document.getElementById('file-app-select').value;
+
+            try {
+                const response = await fetch('/api/admin/files/batch-delete', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${TokenManager.get()}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        app: appName,
+                        session_ids: Array.from(selectedFiles)
+                    })
+                });
+
+                if (!response.ok) {
+                    const data = await response.json();
+                    throw new Error(data.error || '批量删除失败');
+                }
+
+                const result = await response.json();
+                showToast(`成功删除 ${result.deleted_count} 个会话`);
+                loadFiles();
+            } catch (err) {
+                showToast(err.message, 'error');
+            }
+        }
+
+        function formatDate(dateStr) {
+            if (!dateStr) return '-';
+            const date = new Date(dateStr);
+            return date.toLocaleString('zh-CN', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
 
         // 启动
         init();

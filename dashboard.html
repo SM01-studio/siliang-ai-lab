@@ -321,9 +321,17 @@
             }
         }
 
-        // 打开应用
+        // 打开应用 - 携带 Token 实现跨域认证
         function openApp(url) {
-            window.open(url, '_blank');
+            const token = TokenManager.get();
+            if (token) {
+                // 在 URL 中添加 token 参数
+                const separator = url.includes('?') ? '&' : '?';
+                const urlWithToken = `${url}${separator}auth_token=${encodeURIComponent(token)}`;
+                window.open(urlWithToken, '_blank');
+            } else {
+                window.open(url, '_blank');
+            }
         }
 
         // 登出
