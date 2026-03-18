@@ -23,117 +23,182 @@
         /* 左右布局 */
         .hero-layout {
             display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 6rem;
-            max-width: 1200px;
-            margin: 0 auto;
+            align-items: flex-start;
+            justify-content: center;
+            gap: 12rem;
             min-height: calc(100vh - 60px);
             padding: 2rem;
+            padding-top: 2rem;
+            margin-left: -25%;
         }
 
         .hero-left {
-            flex: 1;
-            max-width: 520px;
+            flex: 0 0 55%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 410px;
+            text-align: center;
+            align-items: center;
+        }
+
+        .hero-badge {
+            justify-content: center;
+        }
+
+        .hero-actions {
+            align-self: center;
         }
 
         .hero-right {
-            flex-shrink: 0;
+            flex: 0 0 auto;
+            position: relative;
         }
 
-        .hero-projects {
-            display: flex;
-            flex-direction: row;
-            gap: 1.5rem;
-        }
-
-        .hero-project-card {
-            background: rgba(124, 58, 237, 0.06);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(124, 58, 237, 0.15);
-            border-radius: var(--radius-lg);
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            /* 竖向卡片 9:16 比例 */
-            width: 240px;
-            aspect-ratio: 9 / 16;
-            transition: var(--transition);
-            cursor: default;
-        }
-
-        .hero-project-card:hover {
-            border-color: rgba(124, 58, 237, 0.35);
-            transform: translateY(-4px);
-            box-shadow: 0 8px 30px rgba(124, 58, 237, 0.12);
-        }
-
-        .hero-project-image {
+        /* 错落式悬浮拼贴容器 */
+        .staggered-collage {
+            position: relative;
+            min-height: 600px;
             width: 100%;
-            /* 图片区域占卡片高度的 60%，缩小图片 */
-            height: 60%;
+            padding-top: 0;
+        }
+
+        /* 纵向图片卡片 - 基础样式 */
+        .collage-image {
+            position: absolute;
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15), 0 8px 25px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .collage-image:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.2), 0 15px 35px rgba(0, 0, 0, 0.15);
+        }
+
+        .collage-image img {
+            width: 100%;
+            height: 100%;
             object-fit: cover;
             object-position: center;
         }
 
-        .hero-project-image-placeholder {
-            width: 100%;
-            height: 60%;
-            background: linear-gradient(135deg, rgba(124, 58, 237, 0.3), rgba(6, 182, 212, 0.3));
+        /* 图片A - AI Writer（左侧，底层） */
+        .collage-image-a {
+            width: 220px;
+            height: 320px;
+            left: 0;
+            top: 0;
+            z-index: 1;
+        }
+
+        /* 图片B - ArchiAudit（右侧，向下偏移） */
+        .collage-image-b {
+            width: 200px;
+            height: 290px;
+            left: calc(220px + 1.5rem);
+            top: 120px;
+            z-index: 2;
+        }
+
+        /* 悬浮卡片 - 基础样式（细长型） */
+        .collage-float-card {
+            position: absolute;
+            border-radius: 16px;
+            padding: 10px 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.12), 0 5px 15px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .collage-float-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18), 0 8px 20px rgba(0, 0, 0, 0.12);
+        }
+
+        /* AI Writer 卡片 - 紫色 */
+        .collage-float-card-1 {
+            background: linear-gradient(135deg, #7c3aed, #a78bfa);
+        }
+
+        .collage-float-card-1 .float-card-title,
+        .collage-float-card-1 .float-card-subtitle {
+            color: #ffffff;
+        }
+
+        /* ArchiAudit 卡片 - 青色 */
+        .collage-float-card-2 {
+            background: linear-gradient(135deg, #06b6d4, #67e8f9);
+        }
+
+        .collage-float-card-2 .float-card-title,
+        .collage-float-card-2 .float-card-subtitle {
+            color: #ffffff;
+        }
+
+        .float-card-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.25);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 2rem;
+            font-size: 0.9rem;
+            flex-shrink: 0;
         }
 
-        .hero-project-info {
-            padding: 0.6rem 0.75rem;
-            flex: 1;
+        .float-card-content {
             display: flex;
             flex-direction: column;
-            justify-content: center;
+            gap: 0;
+            line-height: 1.2;
         }
 
-        .hero-project-title {
-            font-weight: 600;
-            font-size: 0.8rem;
-            margin-bottom: 0.2rem;
-            display: flex;
-            align-items: center;
-            gap: 0.4rem;
+        .float-card-title {
+            font-weight: 700;
+            font-size: 0.85rem;
         }
 
-        .hero-project-desc {
-            color: var(--text-secondary);
+        .float-card-subtitle {
             font-size: 0.7rem;
-            line-height: 1.35;
-            /* 限制为2行 */
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
+            opacity: 0.9;
         }
 
-        .hero-project-status {
-            font-size: 0.65rem;
-            padding: 0.15rem 0.5rem;
-            border-radius: 100px;
-            font-weight: 500;
+        /* 悬浮卡片1 - AI Writer标签（右上角，与图片1上边缘齐平，宽度与图片2一致） */
+        .collage-float-card-1 {
+            top: 0;
+            left: calc(220px + 1.5rem);
+            width: 200px;
+            z-index: 4;
         }
 
-        .status-online {
-            background: rgba(34, 197, 94, 0.15);
-            color: #22C55E;
+        /* 悬浮卡片2 - ArchiAudit标签（左下角，与图片2下边缘齐平，宽度与图片1一致） */
+        .collage-float-card-2 {
+            bottom: 190px;
+            left: 0;
+            width: 220px;
+            z-index: 3;
         }
 
-        .status-dev {
-            background: rgba(251, 191, 36, 0.15);
-            color: #FBBF24;
+        .hero-projects-hint {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            position: absolute;
+            top: 420px;
+            left: 0;
+            width: 100%;
+            white-space: nowrap;
         }
 
         /* 字体调大 */
         .hero-title {
             font-size: 3.2rem;
+            white-space: nowrap;
         }
 
         .hero-title-en {
@@ -166,13 +231,18 @@
             .hero-left {
                 max-width: 100%;
             }
+            .hero-right {
+                width: 100%;
+                max-width: 400px;
+            }
             .hero-actions {
                 justify-content: center;
             }
-            /* 小屏幕时卡片上下排列 */
-            .hero-projects {
-                flex-direction: column;
-                align-items: center;
+            /* 小屏幕时缩小拼贴区域 */
+            .staggered-collage {
+                min-height: 450px;
+                transform: scale(0.75);
+                transform-origin: top center;
             }
         }
     </style>
@@ -221,31 +291,38 @@
                     </div>
                 </div>
 
-                <!-- 右侧：项目预览 -->
+                <!-- 右侧：项目预览 - 错落式悬浮拼贴 -->
                 <div class="hero-right">
-                    <div class="hero-projects">
-                        <div class="hero-project-card">
-                            <img src="images/ai-writer.png" alt="AI Writer" class="hero-project-image">
-                            <div class="hero-project-info">
-                                <h3 class="hero-project-title">
-                                    AI Writer
-                                    <span class="hero-project-status status-online">在线 Online</span>
-                                </h3>
-                                <p class="hero-project-desc">超级 AI 公众号文章自动化写作助手，支持从深度调研到排版的全流程自动化。</p>
+                    <div class="staggered-collage">
+                        <!-- 图片A - AI Writer（左侧，底层） -->
+                        <div class="collage-image collage-image-a">
+                            <img src="images/ai-writer.png" alt="AI Writer">
+                        </div>
+
+                        <!-- 图片B - ArchiAudit（右侧，向下偏移） -->
+                        <div class="collage-image collage-image-b">
+                            <img src="images/archiaudit.png" alt="ArchiAudit">
+                        </div>
+
+                        <!-- 悬浮卡片1 - 右上角 -->
+                        <div class="collage-float-card collage-float-card-1">
+                            <div class="float-card-icon">W</div>
+                            <div class="float-card-content">
+                                <span class="float-card-title">AI Writer</span>
+                                <span class="float-card-subtitle">AI智能文字创作助手</span>
                             </div>
                         </div>
-                        <div class="hero-project-card">
-                            <img src="images/archiaudit.png" alt="ArchiAudit" class="hero-project-image">
-                            <div class="hero-project-info">
-                                <h3 class="hero-project-title">
-                                    ArchiAudit
-                                    <span class="hero-project-status status-dev">开发中 Dev</span>
-                                </h3>
-                                <p class="hero-project-desc">AI 住宅建筑平面图专项审核软件，智能识别并审核建筑图纸。</p>
+
+                        <!-- 悬浮卡片2 - 左下角（跨越图片A） -->
+                        <div class="collage-float-card collage-float-card-2">
+                            <div class="float-card-icon">A</div>
+                            <div class="float-card-content">
+                                <span class="float-card-title">ArchiAudit</span>
+                                <span class="float-card-subtitle">精装平面智能优化和审核</span>
                             </div>
                         </div>
                     </div>
-                    <p style="text-align: center; color: var(--text-muted); font-size: 0.9rem; margin-top: 1.25rem;">
+                    <p class="hero-projects-hint">
                         🔐 登录后即可访问所有应用
                     </p>
                 </div>
