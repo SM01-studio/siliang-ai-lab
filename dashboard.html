@@ -722,8 +722,8 @@
                     return;
                 }
 
-                // 渲染应用卡片到对应模块
-                apps.forEach(app => {
+                // 渲染应用卡片到对应模块（排除 AI Writer，已静态添加）
+                apps.filter(app => app.name !== 'AI Writer').forEach(app => {
                     const module = app.module || 'office'; // 默认放到办公工具模块
                     const container = document.getElementById(`module-${module}-content`);
                     if (container) {
