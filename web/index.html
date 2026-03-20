@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CLD-PDDM AI LAB - AI 创新实验平台</title>
+    <!-- v2 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* 粒子效果 */
+        #particles-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* 左右布局 */
+        .hero-layout {
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            gap: 12rem;
+            min-height: calc(100vh - 60px);
+            padding: 2rem;
+            padding-top: 6rem;
+            margin-left: -25%;
+        }
+
+        .hero-left {
+            flex: 0 0 55%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 410px;
+            text-align: center;
+            align-items: center;
+        }
+
+        .hero-badge {
+            justify-content: center;
+        }
+
+        .hero-actions {
+            align-self: center;
+        }
+
+        .hero-right {
+            flex: 0 0 auto;
+            position: relative;
+        }
+
+        /* 错落式悬浮拼贴容器 */
+        .staggered-collage {
+            position: relative;
+            min-height: 600px;
+            width: 100%;
+            padding-top: 0;
+        }
+
+        /* 纵向图片卡片 - 基础样式 */
+        .collage-image {
+            position: absolute;
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15), 0 8px 25px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .collage-image:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.2), 0 15px 35px rgba(0, 0, 0, 0.15);
+        }
+
+        .collage-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+        }
+
+        /* 图片A - AI Writer（左侧，底层） */
+        .collage-image-a {
+            width: 220px;
+            height: 320px;
+            left: 0;
+            top: 0;
+            z-index: 1;
+        }
+
+        /* 图片B - ArchiAudit（右侧，向下偏移） */
+        .collage-image-b {
+            width: 200px;
+            height: 290px;
+            left: calc(220px + 1.5rem);
+            top: 120px;
+            z-index: 2;
+        }
+
+        /* 悬浮卡片 - 基础样式（细长型） */
+        .collage-float-card {
+            position: absolute;
+            border-radius: 16px;
+            padding: 10px 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.12), 0 5px 15px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .collage-float-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18), 0 8px 20px rgba(0, 0, 0, 0.12);
+        }
+
+        /* AI Writer 卡片 - 紫色 */
+        .collage-float-card-1 {
+            background: linear-gradient(135deg, #7c3aed, #a78bfa);
+        }
+
+        .collage-float-card-1 .float-card-title,
+        .collage-float-card-1 .float-card-subtitle {
+            color: #ffffff;
+        }
+
+        /* ArchiAudit 卡片 - 青色 */
+        .collage-float-card-2 {
+            background: linear-gradient(135deg, #06b6d4, #67e8f9);
+        }
+
+        .collage-float-card-2 .float-card-title,
+        .collage-float-card-2 .float-card-subtitle {
+            color: #ffffff;
+        }
+
+        .float-card-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.25);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+
+        .float-card-content {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+            line-height: 1.2;
+        }
+
+        .float-card-title {
+            font-weight: 700;
+            font-size: 0.85rem;
+        }
+
+        .float-card-subtitle {
+            font-size: 0.7rem;
+            opacity: 0.9;
+        }
+
+        /* 悬浮卡片1 - AI Writer标签（右上角，与图片1上边缘齐平，宽度与图片2一致） */
+        .collage-float-card-1 {
+            top: 0;
+            left: calc(220px + 1.5rem);
+            width: 200px;
+            z-index: 4;
+        }
+
+        /* 悬浮卡片2 - ArchiAudit标签（左下角，与图片2下边缘齐平，宽度与图片1一致） */
+        .collage-float-card-2 {
+            bottom: 190px;
+            left: 0;
+            width: 220px;
+            z-index: 3;
+        }
+
+        .hero-projects-hint {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            position: absolute;
+            top: 420px;
+            left: 0;
+            width: 100%;
+            white-space: nowrap;
+        }
+
+        /* 字体调大 */
+        .hero-title {
+            font-size: 3.2rem;
+            white-space: nowrap;
+        }
+
+        .hero-title-en {
+            font-size: 1.2rem;
+        }
+
+        .hero-subtitle {
+            font-size: 1.1rem;
+        }
+
+        .hero-subtitle-en {
+            font-size: 0.95rem;
+        }
+
+        .hero-badge {
+            font-size: 0.9rem;
+        }
+
+        .btn {
+            font-size: 0.95rem;
+            padding: 0.85rem 1.75rem;
+        }
+
+        @media (max-width: 900px) {
+            .hero-layout {
+                flex-direction: column;
+                text-align: center;
+                gap: 3rem;
+            }
+            .hero-left {
+                max-width: 100%;
+            }
+            .hero-right {
+                width: 100%;
+                max-width: 400px;
+            }
+            .hero-actions {
+                justify-content: center;
+            }
+            /* 小屏幕时缩小拼贴区域 */
+            .staggered-collage {
+                min-height: 450px;
+                transform: scale(0.75);
+                transform-origin: top center;
+            }
+        }
+    </style>
+</head>
+<body class="landing">
+    <!-- 粒子背景 -->
+    <canvas id="particles-canvas"></canvas>
+
+    <!-- Navigation -->
+    <nav class="landing-nav">
+        <div class="landing-logo">
+            <div class="landing-logo-icon">S</div>
+            <span>CLD-PDDM AI LAB</span>
+        </div>
+        <div class="landing-nav-links">
+            <a href="#pricing" class="landing-nav-link">套餐 Pricing</a>
+            <a href="#roadmap" class="landing-nav-link">路线 Roadmap</a>
+        </div>
+        <div class="landing-nav-actions">
+            <button class="btn btn-outline btn-sm" onclick="openAuthModal('login')">登录 Login</button>
+            <button class="btn btn-primary btn-sm" onclick="openAuthModal('register')">注册 Sign Up</button>
+        </div>
+    </nav>
+
+    <div class="landing-content">
+        <!-- Hero Section - 左右布局 -->
+        <section class="hero">
+            <div class="hero-layout">
+                <!-- 左侧：标题和按钮 -->
+                <div class="hero-left">
+                    <div class="hero-badge">
+                        <span class="hero-badge-dot"></span>
+                        全新 AI 应用创新实验平台
+                    </div>
+                    <h1 class="hero-title">CLD-PDDM AI LAB</h1>
+                    <p class="hero-title-en">AI Innovation Lab</p>
+                    <p class="hero-subtitle">探索人工智能的无限可能，一站式优先体验我们精心打造的创新实验中的 AI 应用套件</p>
+                    <p class="hero-subtitle-en">Explore infinite possibilities of AI. Get early access to our curated suite of experimental AI applications.</p>
+                    <div class="hero-actions">
+                        <button class="btn btn-cta" onclick="openAuthModal('register')">
+                            开始体验 Get Started →
+                        </button>
+                        <button class="btn btn-secondary" onclick="openAuthModal('login')">
+                            已有账户 Login
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 右侧：项目预览 - 错落式悬浮拼贴 -->
+                <div class="hero-right">
+                    <div class="staggered-collage">
+                        <!-- 图片A - AI Writer（左侧，底层） -->
+                        <div class="collage-image collage-image-a">
+                            <img src="images/ai-writer.png" alt="AI Writer">
+                        </div>
+
+                        <!-- 图片B - ArchiAudit（右侧，向下偏移） -->
+                        <div class="collage-image collage-image-b">
+                            <img src="images/archiaudit.png" alt="ArchiAudit">
+                        </div>
+
+                        <!-- 悬浮卡片1 - 右上角 -->
+                        <div class="collage-float-card collage-float-card-1">
+                            <div class="float-card-icon">W</div>
+                            <div class="float-card-content">
+                                <span class="float-card-title">AI Writer</span>
+                                <span class="float-card-subtitle">AI智能文字创作助手</span>
+                            </div>
+                        </div>
+
+                        <!-- 悬浮卡片2 - 左下角（跨越图片A） -->
+                        <div class="collage-float-card collage-float-card-2">
+                            <div class="float-card-icon">A</div>
+                            <div class="float-card-content">
+                                <span class="float-card-title">ArchiAudit</span>
+                                <span class="float-card-subtitle">精装平面智能优化和审核</span>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="hero-projects-hint">
+                        🔐 登录后即可访问所有应用
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Pricing Section -->
+        <section class="section" id="pricing">
+            <div class="section-header">
+                <p class="section-title-en">Pricing Plans</p>
+                <h2 class="section-title">会员套餐</h2>
+                <p class="section-subtitle">选择适合您的方案</p>
+            </div>
+            <div class="pricing-grid">
+                <div class="pricing-card">
+                    <h3 class="pricing-name">基础版</h3>
+                    <p class="pricing-name-en">Free</p>
+                    <div class="pricing-price">¥0 <span>/永久</span></div>
+                    <ul class="pricing-features">
+                        <li>基础 AI 应用</li>
+                        <li>每日 3 次使用额度（所有应用）</li>
+                        <li>社区支持（后续可使用）</li>
+                    </ul>
+                    <button class="btn btn-outline btn-block" onclick="openAuthModal('register')">免费注册</button>
+                </div>
+
+                <div class="pricing-card featured">
+                    <h3 class="pricing-name">专业版</h3>
+                    <p class="pricing-name-en">Pro</p>
+                    <div class="pricing-price">¥99 <span>/月</span></div>
+                    <ul class="pricing-features">
+                        <li>全部 AI 应用功能</li>
+                        <li>无限使用额度</li>
+                        <li>优先技术支持</li>
+                        <li>早期体验新功能</li>
+                        <li>社区支持（后续可使用）</li>
+                    </ul>
+                    <button class="btn btn-cta btn-block" onclick="showToast('套餐购买功能即将上线 / Coming Soon', 'error')">立即订阅</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Roadmap Section -->
+        <section class="section" id="roadmap">
+            <div class="section-header">
+                <p class="section-title-en">Development Roadmap</p>
+                <h2 class="section-title">发展路线</h2>
+                <p class="section-subtitle">我们的未来规划</p>
+            </div>
+            <div class="roadmap-grid">
+                <div class="roadmap-item">
+                    <div class="roadmap-icon">📝</div>
+                    <h4 class="roadmap-title">AI Writer 2.0</h4>
+                    <p class="roadmap-desc">更智能的内容生成，支持微信公众号平台</p>
+                </div>
+                <div class="roadmap-item">
+                    <div class="roadmap-icon">🏗️</div>
+                    <h4 class="roadmap-title">ArchiAudit</h4>
+                    <p class="roadmap-desc">户型平面智能审核和优化系统，提升项目效率</p>
+                </div>
+                <div class="roadmap-item">
+                    <div class="roadmap-icon">🎨</div>
+                    <h4 class="roadmap-title">AI 客户洞察工具</h4>
+                    <p class="roadmap-desc">建筑/室内/景观专业，AI 驱动的数据驱动设计</p>
+                </div>
+                <div class="roadmap-item">
+                    <div class="roadmap-icon">🤖</div>
+                    <h4 class="roadmap-title">更多应用</h4>
+                    <p class="roadmap-desc">持续探索 AI 技术在各领域的创新应用</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>© 2026 CLD-PDDM AI LAB. All rights reserved. | 联系我们: hello@siliang.cfd</p>
+        </footer>
+    </div>
+
+    <!-- Auth Modal -->
+    <div class="auth-modal-overlay" id="auth-modal">
+        <div class="auth-modal">
+            <button class="auth-close" onclick="closeAuthModal()">×</button>
+
+            <div class="auth-header">
+                <div class="auth-logo">S</div>
+                <h2 class="auth-title" id="modal-title">欢迎回来</h2>
+                <p class="auth-subtitle" id="modal-subtitle">登录您的账户 / Login to your account</p>
+            </div>
+
+            <div class="auth-tabs">
+                <button class="auth-tab active" data-tab="login" onclick="switchTab('login')">登录</button>
+                <button class="auth-tab" data-tab="register" onclick="switchTab('register')">注册</button>
+            </div>
+
+            <!-- Login Form -->
+            <form id="login-form">
+                <div class="form-group">
+                    <label class="form-label">邮箱 Email</label>
+                    <input type="email" class="form-input" id="login-email" placeholder="请输入邮箱" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">密码 Password</label>
+                    <input type="password" class="form-input" id="login-password" placeholder="请输入密码" required>
+                </div>
+                <div class="form-error hidden" id="login-error"></div>
+                <button type="submit" class="btn btn-primary btn-block">
+                    <span id="login-btn-text">登录 Login</span>
+                    <div class="spinner hidden" id="login-spinner"></div>
+                </button>
+                <p class="text-center mt-2">
+                    <a href="#" id="forgot-password-link" style="color: var(--primary-light); font-size: 0.85rem;">忘记密码? Forgot password?</a>
+                </p>
+            </form>
+
+            <!-- Register Form -->
+            <form id="register-form" class="hidden">
+                <div class="form-group">
+                    <label class="form-label">用户名 Username</label>
+                    <input type="text" class="form-input" id="register-username" placeholder="至少3个字符" required minlength="3">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">邮箱 Email</label>
+                    <input type="email" class="form-input" id="register-email" placeholder="请输入邮箱" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">密码 Password</label>
+                    <input type="password" class="form-input" id="register-password" placeholder="至少6个字符" required minlength="6">
+                </div>
+                <div class="form-error hidden" id="register-error"></div>
+                <button type="submit" class="btn btn-primary btn-block">
+                    <span id="register-btn-text">注册 Sign Up</span>
+                    <div class="spinner hidden" id="register-spinner"></div>
+                </button>
+            </form>
+
+            <!-- Forgot Password Form -->
+            <form id="forgot-form" class="hidden">
+                <div class="form-group">
+                    <label class="form-label">邮箱 Email</label>
+                    <input type="email" class="form-input" id="forgot-email" placeholder="请输入注册邮箱" required>
+                </div>
+                <div class="form-error hidden" id="forgot-error"></div>
+                <div class="form-success hidden" id="forgot-success"></div>
+                <button type="submit" class="btn btn-primary btn-block">
+                    <span id="forgot-btn-text">发送重置链接</span>
+                    <div class="spinner hidden" id="forgot-spinner"></div>
+                </button>
+                <p class="text-center mt-2">
+                    <a href="#" id="back-to-login" style="color: var(--primary-light); font-size: 0.85rem;">返回登录 Back to login</a>
+                </p>
+            </form>
+
+            <div class="form-footer">
+                <p>继续即表示您同意我们的服务条款</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script>
+        // 粒子效果
+        const canvas = document.getElementById('particles-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        function createParticles() {
+            particles = [];
+            const particleCount = Math.floor((canvas.width * canvas.height) / 8000);
+            for (let i = 0; i < particleCount; i++) {
+                particles.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    radius: Math.random() * 1.5 + 0.5,
+                    alpha: Math.random() * 0.5 + 0.2,
+                    speed: Math.random() * 0.3 + 0.1,
+                    drift: Math.random() * 0.2 - 0.1
+                });
+            }
+        }
+
+        function drawParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(255, 255, 255, ${p.alpha})`;
+                ctx.fill();
+
+                // 移动
+                p.y -= p.speed;
+                p.x += p.drift;
+
+                // 重置位置
+                if (p.y < -10) {
+                    p.y = canvas.height + 10;
+                    p.x = Math.random() * canvas.width;
+                }
+            });
+            requestAnimationFrame(drawParticles);
+        }
+
+        window.addEventListener('resize', () => {
+            resizeCanvas();
+            createParticles();
+        });
+
+        resizeCanvas();
+        createParticles();
+        drawParticles();
+
+        // Modal 控制
+        function openAuthModal(tab = 'login') {
+            document.getElementById('auth-modal').classList.add('active');
+            switchTab(tab);
+        }
+
+        function closeAuthModal() {
+            document.getElementById('auth-modal').classList.remove('active');
+        }
+
+        document.getElementById('auth-modal').addEventListener('click', (e) => {
+            if (e.target.id === 'auth-modal') closeAuthModal();
+        });
+
+        // Tab 切换
+        function switchTab(tab) {
+            const tabs = document.querySelectorAll('.auth-tab');
+            const loginForm = document.getElementById('login-form');
+            const registerForm = document.getElementById('register-form');
+            const forgotForm = document.getElementById('forgot-form');
+            const modalTitle = document.getElementById('modal-title');
+            const modalSubtitle = document.getElementById('modal-subtitle');
+
+            tabs.forEach(t => t.classList.remove('active'));
+            loginForm.classList.add('hidden');
+            registerForm.classList.add('hidden');
+            forgotForm.classList.add('hidden');
+
+            if (tab === 'login') {
+                document.querySelector('[data-tab="login"]').classList.add('active');
+                loginForm.classList.remove('hidden');
+                modalTitle.textContent = '欢迎回来';
+                modalSubtitle.textContent = '登录您的账户 / Login to your account';
+            } else if (tab === 'register') {
+                document.querySelector('[data-tab="register"]').classList.add('active');
+                registerForm.classList.remove('hidden');
+                modalTitle.textContent = '创建账户';
+                modalSubtitle.textContent = '加入 CLD-PDDM AI LAB / Join us';
+            } else if (tab === 'forgot') {
+                forgotForm.classList.remove('hidden');
+                modalTitle.textContent = '重置密码';
+                modalSubtitle.textContent = '找回您的账户 / Reset password';
+            }
+        }
+
+        document.getElementById('forgot-password-link').addEventListener('click', (e) => {
+            e.preventDefault();
+            switchTab('forgot');
+        });
+
+        document.getElementById('back-to-login').addEventListener('click', (e) => {
+            e.preventDefault();
+            switchTab('login');
+        });
+
+        // 登录
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            const errorEl = document.getElementById('login-error');
+            const btnText = document.getElementById('login-btn-text');
+            const spinner = document.getElementById('login-spinner');
+
+            errorEl.classList.add('hidden');
+            btnText.classList.add('hidden');
+            spinner.classList.remove('hidden');
+
+            try {
+                const data = await AuthAPI.login(email, password);
+                showToast('登录成功 / Login successful');
+                setTimeout(() => { window.location.href = '/dashboard.html'; }, 500);
+            } catch (err) {
+                errorEl.textContent = err.message;
+                errorEl.classList.remove('hidden');
+                btnText.classList.remove('hidden');
+                spinner.classList.add('hidden');
+            }
+        });
+
+        // 注册
+        document.getElementById('register-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('register-username').value;
+            const email = document.getElementById('register-email').value;
+            const password = document.getElementById('register-password').value;
+            const errorEl = document.getElementById('register-error');
+            const btnText = document.getElementById('register-btn-text');
+            const spinner = document.getElementById('register-spinner');
+
+            errorEl.classList.add('hidden');
+            btnText.classList.add('hidden');
+            spinner.classList.remove('hidden');
+
+            try {
+                const data = await AuthAPI.register(username, email, password);
+                showToast('注册成功 / Registration successful');
+                switchTab('login');
+                document.getElementById('login-email').value = email;
+            } catch (err) {
+                errorEl.textContent = err.message;
+                errorEl.classList.remove('hidden');
+                btnText.classList.remove('hidden');
+                spinner.classList.add('hidden');
+            }
+        });
+
+        // 忘记密码
+        document.getElementById('forgot-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('forgot-email').value;
+            const errorEl = document.getElementById('forgot-error');
+            const successEl = document.getElementById('forgot-success');
+            const btnText = document.getElementById('forgot-btn-text');
+            const spinner = document.getElementById('forgot-spinner');
+
+            errorEl.classList.add('hidden');
+            successEl.classList.add('hidden');
+            btnText.classList.add('hidden');
+            spinner.classList.remove('hidden');
+
+            try {
+                const data = await AuthAPI.forgotPassword(email);
+                successEl.textContent = data.message;
+                successEl.classList.remove('hidden');
+                if (data.dev_token) console.log('Reset Token:', data.dev_token);
+            } catch (err) {
+                errorEl.textContent = err.message;
+                errorEl.classList.remove('hidden');
+            } finally {
+                btnText.classList.remove('hidden');
+                spinner.classList.add('hidden');
+            }
+        });
+
+        // 检查登录状态（但不从子应用重定向时自动跳转）
+        const urlParams = new URLSearchParams(window.location.search);
+        const redirectFrom = urlParams.get('from');
+
+        if (redirectFrom !== 'subapp') {
+            checkAuth().then(user => {
+                if (user) window.location.href = '/dashboard.html';
+            });
+        }
+
+        // URL 密码重置
+        const resetToken = urlParams.get('token');
+        if (resetToken) {
+            openAuthModal('login');
+            const modal = document.querySelector('.auth-modal');
+            modal.innerHTML = `
+                <button class="auth-close" onclick="closeAuthModal()">×</button>
+                <div class="auth-header">
+                    <div class="auth-logo">S</div>
+                    <h2 class="auth-title">重置密码</h2>
+                    <p class="auth-subtitle">请输入新密码 / Enter new password</p>
+                </div>
+                <form id="reset-form">
+                    <div class="form-group">
+                        <label class="form-label">新密码 New Password</label>
+                        <input type="password" class="form-input" id="reset-password" placeholder="至少6个字符" required minlength="6">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">确认密码 Confirm</label>
+                        <input type="password" class="form-input" id="reset-confirm" placeholder="再次输入" required>
+                    </div>
+                    <div class="form-error hidden" id="reset-error"></div>
+                    <button type="submit" class="btn btn-primary btn-block">重置密码</button>
+                </form>
+            `;
+            document.getElementById('reset-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const password = document.getElementById('reset-password').value;
+                const confirm = document.getElementById('reset-confirm').value;
+                const errorEl = document.getElementById('reset-error');
+                if (password !== confirm) {
+                    errorEl.textContent = '两次密码不一致';
+                    errorEl.classList.remove('hidden');
+                    return;
+                }
+                try {
+                    await AuthAPI.resetPassword(resetToken, password);
+                    showToast('密码重置成功');
+                    window.location.href = '/index.html';
+                } catch (err) {
+                    errorEl.textContent = err.message;
+                    errorEl.classList.remove('hidden');
+                }
+            });
+        }
+    </script>
+</body>
+</html>

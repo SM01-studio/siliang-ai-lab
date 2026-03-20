@@ -1,0 +1,18 @@
+[Unit]
+Description=Siliang AI LAB - AI Writer Task Processor
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/www/siliang-ai-lab/writer
+Environment="PATH=/www/siliang-ai-lab/venv/bin"
+EnvironmentFile=/www/siliang-ai-lab/writer/.env
+ExecStart=/www/siliang-ai-lab/venv/bin/python task_processor.py
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
