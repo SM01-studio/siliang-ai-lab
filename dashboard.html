@@ -690,12 +690,8 @@
 
         // 初始化
         async function init() {
-            // 临时注释登录验证，用于本地预览
-            // const user = await requireAuth();
-            // if (!user) return;
-
-            // 模拟用户数据
-            const user = { username: '测试用户', role: 'admin' };
+            const user = await requireAuth();
+            if (!user) return;
 
             document.getElementById('user-greeting').textContent = `你好, ${user.username}`;
             document.getElementById('user-avatar').textContent = user.username.charAt(0).toUpperCase();
