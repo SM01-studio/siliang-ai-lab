@@ -28,8 +28,10 @@
             gap: 12rem;
             min-height: calc(100vh - 60px);
             padding: 2rem;
-            padding-top: 6rem;
+            padding-top: 7rem;
             margin-left: -25%;
+            transform: scale(1.09);
+            transform-origin: center center;
         }
 
         .hero-left {
@@ -44,6 +46,8 @@
 
         .hero-badge {
             justify-content: center;
+            background: rgba(124, 58, 237, 0.2);
+            border-color: rgba(124, 58, 237, 0.3);
         }
 
         .hero-actions {
@@ -91,6 +95,11 @@
             left: 0;
             top: 0;
             z-index: 1;
+        }
+
+        .collage-image-a img {
+            object-fit: cover;
+            object-position: center;
         }
 
         /* 图片B - ArchiAudit（右侧，向下偏移） */
@@ -184,6 +193,10 @@
             z-index: 3;
         }
 
+        .collage-float-card-2 .float-card-content {
+            margin-left: 16px;
+        }
+
         .hero-projects-hint {
             text-align: center;
             color: var(--text-muted);
@@ -222,6 +235,22 @@
             padding: 0.85rem 1.75rem;
         }
 
+        /* 会员卡片底部对齐 */
+        .pricing-grid {
+            max-width: 1000px;
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .pricing-card {
+            display: flex;
+            flex-direction: column;
+            min-height: 380px;
+        }
+
+        .pricing-card .btn {
+            margin-top: auto;
+        }
+
         @media (max-width: 900px) {
             .hero-layout {
                 flex-direction: column;
@@ -258,7 +287,7 @@
             <span>CLD-PDDM AI LAB</span>
         </div>
         <div class="landing-nav-links">
-            <a href="#pricing" class="landing-nav-link">套餐 Pricing</a>
+            <a href="#pricing" class="landing-nav-link">团队会员 Group</a>
             <a href="#roadmap" class="landing-nav-link">路线 Roadmap</a>
         </div>
         <div class="landing-nav-actions">
@@ -296,7 +325,7 @@
                     <div class="staggered-collage">
                         <!-- 图片A - AI Writer（左侧，底层） -->
                         <div class="collage-image collage-image-a">
-                            <img src="images/ai-writer.png" alt="AI Writer">
+                            <img src="Card01.jpeg" alt="AI Writer">
                         </div>
 
                         <!-- 图片B - ArchiAudit（右侧，向下偏移） -->
@@ -315,10 +344,10 @@
 
                         <!-- 悬浮卡片2 - 左下角（跨越图片A） -->
                         <div class="collage-float-card collage-float-card-2">
-                            <div class="float-card-icon">A</div>
+                            <div class="float-card-icon">C</div>
                             <div class="float-card-content">
-                                <span class="float-card-title">ArchiAudit</span>
-                                <span class="float-card-subtitle">精装平面智能优化和审核</span>
+                                <span class="float-card-title">ColorInsight</span>
+                                <span class="float-card-subtitle">色彩洞察 AI 助手</span>
                             </div>
                         </div>
                     </div>
@@ -332,35 +361,48 @@
         <!-- Pricing Section -->
         <section class="section" id="pricing">
             <div class="section-header">
-                <p class="section-title-en">Pricing Plans</p>
-                <h2 class="section-title">会员套餐</h2>
-                <p class="section-subtitle">选择适合您的方案</p>
+                <p class="section-title-en">Group</p>
+                <h2 class="section-title">团队会员</h2>
+                <p class="section-subtitle">提供不同的会员权限</p>
             </div>
             <div class="pricing-grid">
                 <div class="pricing-card">
-                    <h3 class="pricing-name">基础版</h3>
-                    <p class="pricing-name-en">Free</p>
-                    <div class="pricing-price">¥0 <span>/永久</span></div>
+                    <h3 class="pricing-name">临时测试账号</h3>
+                    <p class="pricing-name-en">Test</p>
+                    <div class="pricing-price">&nbsp;</div>
                     <ul class="pricing-features">
                         <li>基础 AI 应用</li>
-                        <li>每日 3 次使用额度（所有应用）</li>
+                        <li>每日 3 次使用额度</li>
                         <li>社区支持（后续可使用）</li>
                     </ul>
-                    <button class="btn btn-outline btn-block" onclick="openAuthModal('register')">免费注册</button>
+                    <button class="btn btn-block" style="background: linear-gradient(135deg, #7C3AED, #A78BFA);" onclick="showToast('请邮件联系管理员 / Please contact admin via email', 'error')">立即订阅</button>
                 </div>
 
                 <div class="pricing-card featured">
-                    <h3 class="pricing-name">专业版</h3>
-                    <p class="pricing-name-en">Pro</p>
-                    <div class="pricing-price">¥99 <span>/月</span></div>
+                    <h3 class="pricing-name">会员账号 - 个人功能版</h3>
+                    <p class="pricing-name-en">Personal</p>
+                    <div class="pricing-price">&nbsp;</div>
                     <ul class="pricing-features">
-                        <li>全部 AI 应用功能</li>
+                        <li>各会员专用AI应用</li>
+                        <li>有限使用额度</li>
+                        <li>技术支持</li>
+                        <li>社区支持（后续可使用）</li>
+                    </ul>
+                    <button class="btn btn-cta btn-block" onclick="showToast('请邮件联系管理员 / Please contact admin via email', 'error')">立即订阅</button>
+                </div>
+
+                <div class="pricing-card">
+                    <h3 class="pricing-name">会员账号 - 全功能版</h3>
+                    <p class="pricing-name-en">Full</p>
+                    <div class="pricing-price">&nbsp;</div>
+                    <ul class="pricing-features">
+                        <li>所有AI应用均可使用</li>
                         <li>无限使用额度</li>
                         <li>优先技术支持</li>
                         <li>早期体验新功能</li>
                         <li>社区支持（后续可使用）</li>
                     </ul>
-                    <button class="btn btn-cta btn-block" onclick="showToast('套餐购买功能即将上线 / Coming Soon', 'error')">立即订阅</button>
+                    <button class="btn btn-block" style="background: linear-gradient(135deg, #06B6D4, #22D3EE);" onclick="showToast('请邮件联系管理员 / Please contact admin via email', 'error')">立即订阅</button>
                 </div>
             </div>
         </section>
