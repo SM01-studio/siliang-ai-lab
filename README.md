@@ -57,6 +57,14 @@ siliang-ai-lab/
 - [x] 管理员用户管理
 - [x] Glassmorphism UI
 
+## 界面预览
+
+### 首页
+![首页](page01.jpeg)
+
+### Dashboard
+![Dashboard](page02.jpeg)
+
 ## 部署
 
 生产环境部署到：
