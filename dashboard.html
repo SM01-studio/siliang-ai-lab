@@ -571,20 +571,9 @@
                     <span class="module-title-en">AI Utility Tools</span>
                 </div>
                 <div class="module-content" id="module-office-content">
-                    <!-- AI Writer 卡片 -->
-                    <div class="card-wrapper">
-                        <div class="float-icon icon-ut" onclick="openVideoModal()" style="cursor: pointer;">
-                            <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-                        </div>
-                        <div class="placeholder-card" onclick="openApp('https://writer.siliang.cfd')" style="cursor: pointer;">
-                            <img src="images/ai-writer.png" alt="AI Writer" class="placeholder-card-image large">
-                            <div class="placeholder-card-content">
-                                <div class="placeholder-card-title">AI Writer</div>
-                                <div class="placeholder-card-subtitle">AI智能文字创作助手 / AI Writing Assistant</div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- CLD AI PPT助手 卡片 -->
+                    <!-- 动态加载的应用卡片将插入到这里 -->
+                    <div id="dynamic-apps-office"></div>
+                    <!-- CLD AI PPT助手 卡片（静态占位） -->
                     <div class="card-wrapper">
                         <div class="float-icon icon-ut">
                             <svg viewBox="0 0 24 24"><path d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
@@ -703,44 +692,37 @@
 
         // 加载应用列表
         async function loadApps() {
-            // 本地预览使用模拟数据
-            // AI Writer卡片已在HTML中静态添加，不再动态生成
-            const mockApps = [];
-
             try {
-                // 尝试调用API，失败则使用模拟数据
-                let apps;
-                try {
-                    const response = await AppsAPI.getAll();
-                    apps = response.apps;
-                } catch (e) {
-                    apps = mockApps;
-                }
+                // 从 API 获取用户有权限的应用
+                const response = await AppsAPI.getAll();
+                const apps = response.apps || [];
 
-                if (apps.length === 0) {
-                    // 没有额外应用，不需要显示提示
-                    return;
-                }
+                // 按模块分组渲染应用卡片
+                apps.forEach(app => {
+                    const module = app.module || 'office';
+                    const containerId = `dynamic-apps-${module}`;
+                    const container = document.getElementById(containerId);
 
-                // 渲染应用卡片到对应模块（排除 AI Writer，已静态添加）
-                apps.filter(app => app.name !== 'AI Writer').forEach(app => {
-                    const module = app.module || 'office'; // 默认放到办公工具模块
-                    const container = document.getElementById(`module-${module}-content`);
                     if (container) {
+                        // 构建卡片 HTML（与静态卡片样式一致）
+                        const hasVideo = app.video_url && app.video_url.trim() !== '';
+                        const iconClass = app.icon_class || 'icon-ut';
+                        const iconSvg = app.icon_svg || '<path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>';
+                        const imageClass = app.image_url ? 'placeholder-card-image large' : '';
+                        const subtitle = app.card_subtitle && app.card_subtitle_en
+                            ? `${app.card_subtitle} / ${app.card_subtitle_en}`
+                            : (app.card_subtitle || app.card_subtitle_en || app.description || '');
+
                         const cardHtml = `
-                            <div class="app-card" onclick="openApp('${app.url}')">
-                                <img src="${app.image_url || 'images/placeholder.png'}" alt="${app.name}" class="app-card-image" loading="lazy">
-                                <div class="app-card-content">
-                                    <div class="app-card-header">
-                                        <h3 class="app-card-title">${app.name}</h3>
-                                        <span class="app-card-status status-online">在线 Online</span>
-                                    </div>
-                                    <p class="app-card-desc">${app.description || '暂无描述'}</p>
-                                    <div class="app-card-footer">
-                                        <span class="app-card-link">
-                                            打开应用 Open App →
-                                        </span>
-                                        <span style="color: var(--text-muted); font-size: 0.75rem;">v1.0</span>
+                            <div class="card-wrapper">
+                                <div class="float-icon ${iconClass}" ${hasVideo ? `onclick="openVideoModal('${app.video_url}')"` : ''} style="${hasVideo ? 'cursor: pointer;' : ''}">
+                                    <svg viewBox="0 0 24 24">${iconSvg}</svg>
+                                </div>
+                                <div class="placeholder-card" onclick="openApp('${app.url}')" style="cursor: pointer;">
+                                    ${app.image_url ? `<img src="${app.image_url}" alt="${app.name}" class="${imageClass}">` : '<div style="height: 55%; margin-top: 24px;"></div>'}
+                                    <div class="placeholder-card-content">
+                                        <div class="placeholder-card-title">${app.name}</div>
+                                        <div class="placeholder-card-subtitle">${subtitle}</div>
                                     </div>
                                 </div>
                             </div>
@@ -749,11 +731,7 @@
                     }
                 });
             } catch (err) {
-                grid.innerHTML = `
-                    <div class="glass-card text-center" style="grid-column: 1 / -1; padding: 3rem;">
-                        <p style="color: var(--text-muted);">加载失败: ${err.message}</p>
-                    </div>
-                `;
+                console.error('加载应用失败:', err);
             }
         }
 
@@ -848,9 +826,22 @@
     </style>
 
     <script>
-        function openVideoModal() {
-            document.getElementById('video-modal').classList.add('active');
-            document.getElementById('demo-video').play();
+        // 当前播放的视频 URL
+        let currentVideoUrl = '';
+
+        function openVideoModal(videoUrl) {
+            const modal = document.getElementById('video-modal');
+            const video = document.getElementById('demo-video');
+
+            // 如果提供了新的视频 URL，则更新源
+            if (videoUrl && videoUrl !== currentVideoUrl) {
+                video.querySelector('source').src = videoUrl;
+                video.load();
+                currentVideoUrl = videoUrl;
+            }
+
+            modal.classList.add('active');
+            video.play();
         }
 
         function closeVideoModal() {

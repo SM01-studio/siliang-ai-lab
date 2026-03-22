@@ -73,7 +73,13 @@ def init_db():
             url TEXT NOT NULL,
             is_active INTEGER DEFAULT 1,
             sort_order INTEGER DEFAULT 0,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            module TEXT DEFAULT 'office',
+            video_url TEXT,
+            icon_class TEXT DEFAULT 'icon-ut',
+            icon_svg TEXT,
+            card_subtitle TEXT,
+            card_subtitle_en TEXT
         )
     ''')
 
@@ -115,6 +121,22 @@ def init_db():
         conn.commit()
     except:
         pass  # 表已存在
+
+    # 迁移：添加 apps 表新字段（如果不存在）
+    new_columns = [
+        ('module', 'TEXT DEFAULT "office"'),
+        ('video_url', 'TEXT'),
+        ('icon_class', 'TEXT DEFAULT "icon-ut"'),
+        ('icon_svg', 'TEXT'),
+        ('card_subtitle', 'TEXT'),
+        ('card_subtitle_en', 'TEXT')
+    ]
+    for col_name, col_type in new_columns:
+        try:
+            cursor.execute(f'ALTER TABLE apps ADD COLUMN {col_name} {col_type}')
+            conn.commit()
+        except:
+            pass  # 字段已存在
 
     conn.close()
 
@@ -488,9 +510,15 @@ def seed_apps():
             {
                 'name': 'AI Writer',
                 'description': '超级 AI 公众号文章自动化写作助手，支持从深度调研到排版的全流程自动化。',
-                'image_url': '/images/ai-writer.png',
+                'image_url': 'images/ai-writer.png',
                 'url': 'https://writer.siliang.cfd',
-                'sort_order': 1
+                'sort_order': 1,
+                'module': 'office',
+                'video_url': 'CC-AI-Writer-compressed.mp4',
+                'icon_class': 'icon-ut',
+                'icon_svg': '<path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>',
+                'card_subtitle': 'AI智能文字创作助手',
+                'card_subtitle_en': 'AI Writing Assistant'
             },
             {
                 'name': 'ArchiAudit',
@@ -498,17 +526,53 @@ def seed_apps():
                 'image_url': '/images/archiaudit.png',
                 'url': 'https://archi.siliang.cfd',
                 'is_active': 0,  # 尚未上线
-                'sort_order': 2
+                'sort_order': 2,
+                'module': 'office',
+                'card_subtitle': 'AI住宅平面方案审核和优化',
+                'card_subtitle_en': 'AI Plan Audit'
             }
         ]
 
         for app in sample_apps:
             cursor.execute('''
-                INSERT INTO apps (name, description, image_url, url, is_active, sort_order)
-                VALUES (?, ?, ?, ?, ?, ?)
-            ''', (app['name'], app['description'], app['image_url'], app['url'], app.get('is_active', 1), app['sort_order']))
+                INSERT INTO apps (name, description, image_url, url, is_active, sort_order, module, video_url, icon_class, icon_svg, card_subtitle, card_subtitle_en)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ''', (
+                app['name'], app['description'], app['image_url'], app['url'],
+                app.get('is_active', 1), app['sort_order'], app.get('module', 'office'),
+                app.get('video_url'), app.get('icon_class', 'icon-ut'),
+                app.get('icon_svg'), app.get('card_subtitle'), app.get('card_subtitle_en')
+            ))
 
         conn.commit()
         print(f'已添加 {len(sample_apps)} 个示例应用')
+    else:
+        # 检查 AI Writer 是否需要更新（添加新字段）
+        cursor.execute('SELECT * FROM apps WHERE name = ?', ('AI Writer',))
+        ai_writer = cursor.fetchone()
+        if ai_writer and not ai_writer['module']:
+            # 更新 AI Writer 的完整信息
+            cursor.execute('''
+                UPDATE apps SET
+                    module = ?,
+                    video_url = ?,
+                    icon_class = ?,
+                    icon_svg = ?,
+                    card_subtitle = ?,
+                    card_subtitle_en = ?,
+                    image_url = ?
+                WHERE name = ?
+            ''', (
+                'office',
+                'CC-AI-Writer-compressed.mp4',
+                'icon-ut',
+                '<path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>',
+                'AI智能文字创作助手',
+                'AI Writing Assistant',
+                'images/ai-writer.png',
+                'AI Writer'
+            ))
+            conn.commit()
+            print('已更新 AI Writer 应用信息')
 
     conn.close()
