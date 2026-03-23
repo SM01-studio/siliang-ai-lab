@@ -116,8 +116,7 @@ body {
     left: 0;
     right: 0;
     padding: 1rem 2rem;
-    background: rgba(10, 10, 15, 0.8);
-    backdrop-filter: blur(20px);
+    background: rgba(10, 10, 15, 0.95);
     border-bottom: 1px solid var(--border);
     z-index: 100;
     display: flex;
@@ -723,8 +722,7 @@ body {
 .auth-modal-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.8);
-    backdrop-filter: blur(10px);
+    background: rgba(0, 0, 0, 0.85);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -883,8 +881,7 @@ body {
 
 /* ==================== Header (Dashboard) ==================== */
 .header {
-    background: rgba(10, 10, 15, 0.9);
-    backdrop-filter: blur(20px);
+    background: rgba(10, 10, 15, 0.95);
     border-bottom: 1px solid var(--border);
     padding: 0.75rem 0;
     position: sticky;
@@ -1056,8 +1053,7 @@ body {
 .modal-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.8);
-    backdrop-filter: blur(10px);
+    background: rgba(0, 0, 0, 0.85);
     display: flex;
     align-items: center;
     justify-content: center;

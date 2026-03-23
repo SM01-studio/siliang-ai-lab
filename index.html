@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CLD-PDDM AI LAB - AI 创新实验平台</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <!-- v2 -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -531,10 +532,13 @@
 
     <script src="js/api.js"></script>
     <script>
-        // 粒子效果
+        // 粒子效果 - 性能优化版本
         const canvas = document.getElementById('particles-canvas');
         const ctx = canvas.getContext('2d');
         let particles = [];
+        let animationId = null;
+        let isPageVisible = true;
+        const MAX_PARTICLES = 60; // 限制最大粒子数
 
         function resizeCanvas() {
             canvas.width = window.innerWidth;
@@ -543,7 +547,9 @@
 
         function createParticles() {
             particles = [];
-            const particleCount = Math.floor((canvas.width * canvas.height) / 8000);
+            // 计算粒子数，但限制最大值
+            const calculatedCount = Math.floor((canvas.width * canvas.height) / 15000);
+            const particleCount = Math.min(calculatedCount, MAX_PARTICLES);
             for (let i = 0; i < particleCount; i++) {
                 particles.push({
                     x: Math.random() * canvas.width,
@@ -557,6 +563,12 @@
         }
 
         function drawParticles() {
+            // 页面不可见时暂停动画
+            if (!isPageVisible) {
+                animationId = requestAnimationFrame(drawParticles);
+                return;
+            }
+
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             particles.forEach(p => {
                 ctx.beginPath();
@@ -574,12 +586,22 @@
                     p.x = Math.random() * canvas.width;
                 }
             });
-            requestAnimationFrame(drawParticles);
+            animationId = requestAnimationFrame(drawParticles);
         }
 
+        // 页面可见性检测 - 切换标签页时暂停动画
+        document.addEventListener('visibilitychange', () => {
+            isPageVisible = !document.hidden;
+        });
+
+        // 节流 resize 事件
+        let resizeTimeout;
         window.addEventListener('resize', () => {
-            resizeCanvas();
-            createParticles();
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => {
+                resizeCanvas();
+                createParticles();
+            }, 200);
         });
 
         resizeCanvas();
