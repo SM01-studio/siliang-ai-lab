@@ -522,12 +522,14 @@ def seed_apps():
             },
             {
                 'name': 'ArchiAudit',
-                'description': 'AI 住宅建筑平面图专项审核软件，智能识别并审核建筑图纸。（开发中）',
+                'description': 'AI 住宅建筑平面图专项审核软件，智能识别并审核建筑图纸。',
                 'image_url': '/images/archiaudit.png',
-                'url': 'https://archi.siliang.cfd',
-                'is_active': 0,  # 尚未上线
+                'url': 'https://archiaudit.siliang.cfd',
+                'is_active': 1,
                 'sort_order': 2,
-                'module': 'office',
+                'module': 'dm',
+                'icon_class': 'icon-dm',
+                'icon_svg': '<path d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2"/>',
                 'card_subtitle': 'AI住宅平面方案审核和优化',
                 'card_subtitle_en': 'AI Plan Audit'
             }

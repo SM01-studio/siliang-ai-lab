@@ -25,7 +25,7 @@ def seed_apps():
             'name': 'ArchiAudit',
             'description': 'AI 住宅建筑平面图专项审核软件，智能识别并审核建筑图纸。',
             'image_url': '/images/archiaudit.png',
-            'url': 'https://archiaudit.siliang.cfd/',  # 待部署
+            'url': 'https://archiaudit.siliang.cfd',
             'sort_order': 2
         }
     ]
