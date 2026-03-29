@@ -572,7 +572,26 @@
             if (appName === 'ai-writer') {
                 window.open(`https://api.siliang.cfd/api/writer/download/all/${sessionId}`, '_blank');
             } else {
-                window.open(`https://api.siliang.cfd/api/admin/files/${appName}/${sessionId}/download`, '_blank');
+                try {
+                    const response = await fetch(`https://api.siliang.cfd/api/admin/files/${appName}/${sessionId}/download`, {
+                        headers: { 'Authorization': `Bearer ${TokenManager.get()}` }
+                    });
+                    if (!response.ok) {
+                        const data = await response.json();
+                        throw new Error(data.error || '下载失败');
+                    }
+                    const blob = await response.blob();
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `${appName}_${sessionId}.zip`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                } catch (err) {
+                    showToast(err.message, 'error');
+                }
             }
         }
 
