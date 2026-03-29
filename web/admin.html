@@ -142,7 +142,8 @@
                 <label style="font-weight: 500;">选择应用:</label>
                 <select id="file-app-select" class="form-input" style="width: auto; min-width: 200px;" onchange="loadFiles()">
                     <option value="ai-writer">AI Article Writer</option>
-                    <!-- 未来可添加更多应用 -->
+                    <option value="archiaudit">ArchiAudit</option>
+                    <option value="colorinsight">ColorInsight</option>
                 </select>
                 <button class="btn btn-secondary" onclick="loadFiles()">🔄 刷新</button>
                 <button class="btn btn-danger" id="batch-delete-btn" onclick="batchDeleteFiles()" disabled style="margin-left: auto;">🗑️ 批量删除选中</button>
@@ -568,9 +569,10 @@
 
         async function downloadSession(sessionId) {
             const appName = document.getElementById('file-app-select').value;
-            // 构建下载链接
             if (appName === 'ai-writer') {
                 window.open(`https://api.siliang.cfd/api/writer/download/all/${sessionId}`, '_blank');
+            } else {
+                window.open(`https://api.siliang.cfd/api/admin/files/${appName}/${sessionId}/download`, '_blank');
             }
         }
 

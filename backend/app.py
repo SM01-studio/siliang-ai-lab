@@ -345,8 +345,8 @@ import requests
 # 应用 API 地址配置
 APP_API_URLS = {
     'ai-writer': 'http://127.0.0.1:5001/api/admin',
-    # 未来可以添加其他应用
-    # 'archiaudit': 'http://127.0.0.1:5002/api/admin',
+    'archiaudit': 'http://127.0.0.1:5003/api/admin',
+    'colorinsight': 'http://127.0.0.1:5002/api/admin',
 }
 
 
@@ -397,6 +397,34 @@ def admin_delete_file(app_name, session_id):
             return jsonify(response.json())
         else:
             return jsonify({'error': f'删除失败: {response.status_code}'}), 500
+    except requests.exceptions.RequestException as e:
+        return jsonify({'error': f'无法连接应用: {str(e)}'}), 500
+
+
+@app.route('/api/admin/files/<app_name>/<session_id>/download', methods=['GET'])
+def admin_download_files(app_name, session_id):
+    """管理员：下载会话文件（代理到子应用）"""
+    token = request.headers.get('Authorization', '').replace('Bearer ', '')
+    session = Session.get_by_token(token)
+
+    if not session or session['role'] != 'admin':
+        return jsonify({'error': '无权限'}), 403
+
+    if app_name not in APP_API_URLS:
+        return jsonify({'error': f'未知应用: {app_name}'}), 400
+
+    try:
+        api_url = f"{APP_API_URLS[app_name]}/sessions/{session_id}/download"
+        response = requests.get(api_url, timeout=60, stream=True)
+
+        if response.status_code == 200:
+            from io import BytesIO
+            buf = BytesIO(response.content)
+            from flask import send_file
+            return send_file(buf, mimetype='application/zip', as_attachment=True,
+                           download_name=f'{app_name}_{session_id}.zip')
+        else:
+            return jsonify({'error': f'下载失败: {response.status_code}'}), 500
     except requests.exceptions.RequestException as e:
         return jsonify({'error': f'无法连接应用: {str(e)}'}), 500
 
