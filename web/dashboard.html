@@ -463,8 +463,8 @@
                             </div>
                         </div>
                     </div>
-                    <!-- 动态加载的DM模块应用 -->
-                    <div id="dynamic-apps-dm" style="display: contents;"></div>
+                    <!-- 动态DM模块应用(前: sort_order<=1) -->
+                    <div id="dynamic-apps-dm-early" style="display: contents;"></div>
                     <!-- 占位卡片3 -->
                     <div class="card-wrapper">
                         <div class="float-icon">
@@ -477,6 +477,8 @@
                             </div>
                         </div>
                     </div>
+                    <!-- 动态DM模块应用(后: sort_order>1) -->
+                    <div id="dynamic-apps-dm-late" style="display: contents;"></div>
                 </div>
             </div>
 
@@ -663,7 +665,12 @@
                 // 按模块分组渲染应用卡片
                 apps.forEach(app => {
                     const module = app.module || 'office';
-                    const containerId = `dynamic-apps-${module}`;
+                    let containerId;
+                    if (module === 'dm') {
+                        containerId = app.sort_order <= 1 ? 'dynamic-apps-dm-early' : 'dynamic-apps-dm-late';
+                    } else {
+                        containerId = `dynamic-apps-${module}`;
+                    }
                     const container = document.getElementById(containerId);
 
                     if (container) {
