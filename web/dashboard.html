@@ -77,7 +77,7 @@
 
         .app-card {
             background: var(--bg-card);
-            border: 1px solid var(--border);
+            border: 2px solid rgba(255, 255, 255, 0.25);
             border-radius: var(--radius-lg);
             overflow: hidden;
             transition: var(--transition);
@@ -188,6 +188,222 @@
                 max-width: 100%;
             }
         }
+
+        /* 模块大标签 */
+        .module-section {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .module-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.25rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .module-icon {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .module-icon.icon-dm {
+            background: linear-gradient(135deg, #7c3aed, #a78bfa);
+        }
+
+        .module-icon.icon-210 {
+            background: linear-gradient(135deg, #06b6d4, #67e8f9);
+        }
+
+        .module-icon.icon-kb {
+            background: linear-gradient(135deg, #6D28D9, #8B5CF6);
+        }
+
+        .module-icon.icon-ut {
+            background: linear-gradient(135deg, #0891B2, #22D3EE);
+        }
+
+        .module-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .module-title-en {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-left: 0.5rem;
+        }
+
+        .module-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            padding-top: 30px;
+            overflow: visible;
+        }
+
+        /* 占位卡片样式 */
+        .placeholder-card {
+            background: var(--bg-card);
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            border-radius: var(--radius-lg);
+            width: 100%;
+            max-width: 180px;
+            aspect-ratio: 3 / 4;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .placeholder-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(255, 255, 255, 0.3);
+            box-shadow: var(--shadow-glow);
+        }
+
+        /* 带浮动图标的卡片 - 允许溢出 */
+        .placeholder-card.with-image {
+            overflow: visible;
+        }
+
+        /* 卡片包装器 - 包含独立的图标和卡片 */
+        .card-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 180px;
+        }
+
+        .card-wrapper .placeholder-card {
+            max-width: 100%;
+        }
+
+        /* 独立的浮动图标 */
+        .float-icon {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            z-index: 10;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .float-icon:hover {
+            transform: translate(-50%, -50%) scale(1.1);
+        }
+
+        .float-icon.icon-210 {
+            background: linear-gradient(135deg, #06b6d4, #67e8f9);
+        }
+
+        .float-icon.icon-kb-color {
+            background: linear-gradient(135deg, #6D28D9, #8B5CF6);
+        }
+
+        .float-icon.icon-kb {
+            background: linear-gradient(135deg, #6D28D9, #8B5CF6);
+        }
+
+        .float-icon.icon-ut {
+            background: linear-gradient(135deg, #0891B2, #22D3EE);
+        }
+
+        .placeholder-card-link {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .placeholder-card-link:hover .placeholder-card {
+            transform: translateY(-4px);
+            border-color: var(--primary);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .float-icon svg {
+            width: 24px;
+            height: 24px;
+            stroke: white;
+            fill: none;
+            stroke-width: 1.5;
+        }
+
+        .placeholder-card-image {
+            width: 100%;
+            height: 55%;
+            object-fit: cover;
+            flex-shrink: 0;
+            margin-top: 24px;
+        }
+
+        .placeholder-card-image.large {
+            height: 60%;
+        }
+        }
+
+        .placeholder-card-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 0.5rem;
+        }
+
+        .placeholder-card-icon svg {
+            width: 24px;
+            height: 24px;
+            stroke: white;
+            fill: none;
+            stroke-width: 1.5;
+        }
+
+        .placeholder-card-content {
+            padding: 0.75rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .placeholder-card-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            text-align: center;
+            margin-bottom: 0.25rem;
+        }
+
+        .placeholder-card-subtitle {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-align: center;
+            line-height: 1.3;
+        }
     </style>
 </head>
 <body style="background: var(--bg-primary);">
@@ -226,7 +442,117 @@
             <h2 class="apps-section-title">
                 <span>📁</span> 可用应用 Available Apps
             </h2>
-            <div class="apps-grid" id="apps-grid">
+
+            <!-- 模块1：设计管理类 AI Agent -->
+            <div class="module-section" id="module-writing">
+                <div class="module-header">
+                    <span class="module-icon icon-dm">DM</span>
+                    <span class="module-title">设计管理类 AI Agent</span>
+                    <span class="module-title-en">Design & Management AI Agent</span>
+                </div>
+                <div class="module-content" id="module-writing-content">
+                    <!-- 占位卡片1 -->
+                    <div class="card-wrapper">
+                        <div class="float-icon">
+                            <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                        </div>
+                        <div class="placeholder-card">
+                            <div class="placeholder-card-content">
+                                <div class="placeholder-card-title">设计语言转化</div>
+                                <div class="placeholder-card-subtitle">建筑专业</div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- 占位卡片3 -->
+                    <div class="card-wrapper">
+                        <div class="float-icon">
+                            <svg viewBox="0 0 24 24"><path d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>
+                        </div>
+                        <div class="placeholder-card">
+                            <div class="placeholder-card-content">
+                                <div class="placeholder-card-title">设计语言转化</div>
+                                <div class="placeholder-card-subtitle">景观专业</div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- 动态加载的DM模块应用 -->
+                    <div id="dynamic-apps-dm" style="display: contents;"></div>
+                </div>
+            </div>
+
+            <!-- 模块2：210模块AI工具 -->
+            <div class="module-section" id="module-design">
+                <div class="module-header">
+                    <span class="module-icon icon-210">210</span>
+                    <span class="module-title">210模块AI工具</span>
+                    <span class="module-title-en">210 Module AI Tools</span>
+                </div>
+                <div class="module-content" id="module-design-content">
+                    <!-- 占位卡片 -->
+                    <div class="card-wrapper">
+                        <div class="float-icon icon-210">
+                            <svg viewBox="0 0 24 24"><path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                        </div>
+                        <div class="placeholder-card">
+                            <div class="placeholder-card-content">
+                                <div class="placeholder-card-title">210模块配置清单和费用估算</div>
+                                <div class="placeholder-card-subtitle">210 Module Configuration</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 模块3：知识库类AI Agent -->
+            <div class="module-section" id="module-analysis">
+                <div class="module-header">
+                    <span class="module-icon icon-kb">KB</span>
+                    <span class="module-title">知识库类AI Agent</span>
+                    <span class="module-title-en">Knowledge Base AI Agent</span>
+                </div>
+                <div class="module-content" id="module-analysis-content">
+                    <!-- 占位卡片 -->
+                    <div class="card-wrapper">
+                        <div class="float-icon icon-kb">
+                            <svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
+                        </div>
+                        <div class="placeholder-card">
+                            <div class="placeholder-card-content">
+                                <div class="placeholder-card-title">精装规范智能筛选助手</div>
+                                <div class="placeholder-card-subtitle">Decoration Standards Filter</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 模块4：AI 实用工具 -->
+            <div class="module-section" id="module-office">
+                <div class="module-header">
+                    <span class="module-icon icon-ut">UT</span>
+                    <span class="module-title">AI 实用工具</span>
+                    <span class="module-title-en">AI Utility Tools</span>
+                </div>
+                <div class="module-content" id="module-office-content">
+                    <!-- 动态加载的应用卡片将插入到这里 -->
+                    <div id="dynamic-apps-office" style="display: contents;"></div>
+                    <!-- CLD AI PPT助手 卡片（静态占位） -->
+                    <div class="card-wrapper">
+                        <div class="float-icon icon-ut">
+                            <svg viewBox="0 0 24 24"><path d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+                        </div>
+                        <div class="placeholder-card">
+                            <div class="placeholder-card-content">
+                                <div class="placeholder-card-title">CLD AI PPT助手</div>
+                                <div class="placeholder-card-subtitle">AI PPT Assistant</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 原有的apps-grid隐藏，用于数据加载 -->
+            <div class="apps-grid" id="apps-grid" style="display: none;">
                 <div class="glass-card text-center" style="padding: 3rem;">
                     <div class="spinner" style="margin: 0 auto;"></div>
                     <p style="margin-top: 1rem; color: var(--text-muted);">加载中...</p>
@@ -329,45 +655,46 @@
 
         // 加载应用列表
         async function loadApps() {
-            const grid = document.getElementById('apps-grid');
-
             try {
-                const { apps } = await AppsAPI.getAll();
+                // 从 API 获取用户有权限的应用
+                const response = await AppsAPI.getAll();
+                const apps = response.apps || [];
 
-                if (apps.length === 0) {
-                    grid.innerHTML = `
-                        <div class="glass-card text-center" style="grid-column: 1 / -1; padding: 3rem;">
-                            <p style="color: var(--text-muted); margin-bottom: 0.5rem;">暂无可用应用</p>
-                            <p style="color: var(--text-muted); font-size: 0.85rem;">请联系管理员分配应用权限</p>
-                        </div>
-                    `;
-                    return;
-                }
+                // 按模块分组渲染应用卡片
+                apps.forEach(app => {
+                    const module = app.module || 'office';
+                    const containerId = `dynamic-apps-${module}`;
+                    const container = document.getElementById(containerId);
 
-                grid.innerHTML = apps.map(app => `
-                    <div class="app-card" onclick="openApp('${app.url}')">
-                        <img src="${app.image_url || 'images/placeholder.png'}" alt="${app.name}" class="app-card-image" loading="lazy">
-                        <div class="app-card-content">
-                            <div class="app-card-header">
-                                <h3 class="app-card-title">${app.name}</h3>
-                                <span class="app-card-status status-online">在线 Online</span>
+                    if (container) {
+                        // 构建卡片 HTML（与静态卡片样式一致）
+                        const hasVideo = app.video_url && app.video_url.trim() !== '';
+                        const iconClass = app.icon_class || 'icon-ut';
+                        const iconSvg = app.icon_svg || '<path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>';
+                        const imageClass = app.image_url ? 'placeholder-card-image large' : '';
+                        const subtitle = app.card_subtitle && app.card_subtitle_en
+                            ? `${app.card_subtitle} / ${app.card_subtitle_en}`
+                            : (app.card_subtitle || app.card_subtitle_en || app.description || '');
+
+                        const cardHtml = `
+                            <div class="card-wrapper">
+                                <div class="float-icon ${iconClass}" ${hasVideo ? `onclick="openVideoModal('${app.video_url}')"` : ''} style="${hasVideo ? 'cursor: pointer;' : ''}">
+                                    <svg viewBox="0 0 24 24">${iconSvg}</svg>
+                                </div>
+                                <div class="placeholder-card" onclick="openApp('${app.url}')" style="cursor: pointer;">
+                                    ${app.image_url ? `<img src="${app.image_url}" alt="${app.name}" class="${imageClass}">` : '<div style="height: 55%; margin-top: 24px;"></div>'}
+                                    <div class="placeholder-card-content">
+                                        <div class="placeholder-card-title">${app.name}</div>
+                                        <div class="placeholder-card-subtitle">${subtitle}</div>
+                                    </div>
+                                </div>
                             </div>
-                            <p class="app-card-desc">${app.description || '暂无描述'}</p>
-                            <div class="app-card-footer">
-                                <span class="app-card-link">
-                                    打开应用 Open App →
-                                </span>
-                                <span style="color: var(--text-muted); font-size: 0.75rem;">v1.0</span>
-                            </div>
-                        </div>
-                    </div>
-                `).join('');
+                        `;
+                        container.innerHTML += cardHtml;
+                    }
+                });
             } catch (err) {
-                grid.innerHTML = `
-                    <div class="glass-card text-center" style="grid-column: 1 / -1; padding: 3rem;">
-                        <p style="color: var(--text-muted);">加载失败: ${err.message}</p>
-                    </div>
-                `;
+                console.error('加载应用失败:', err);
             }
         }
 
@@ -392,6 +719,115 @@
         });
 
         init();
+    </script>
+
+    <!-- 视频弹窗 -->
+    <div class="video-modal" id="video-modal">
+        <div class="video-modal-content">
+            <button class="video-modal-close" onclick="closeVideoModal()">×</button>
+            <video id="demo-video" controls>
+                <source src="CC-AI-Writer-compressed.mp4" type="video/mp4">
+                您的浏览器不支持视频播放
+            </video>
+        </div>
+    </div>
+
+    <style>
+        .video-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .video-modal.active {
+            display: flex;
+        }
+
+        .video-modal-content {
+            position: relative;
+            width: 90%;
+            max-width: 900px;
+            background: #000;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .video-modal-content video {
+            width: 100%;
+            display: block;
+        }
+
+        .video-modal-close {
+            position: absolute;
+            top: -40px;
+            right: 0;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .video-modal-close:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+    </style>
+
+    <script>
+        // 当前播放的视频 URL
+        let currentVideoUrl = '';
+
+        function openVideoModal(videoUrl) {
+            const modal = document.getElementById('video-modal');
+            const video = document.getElementById('demo-video');
+
+            // 如果提供了新的视频 URL，则更新源
+            if (videoUrl && videoUrl !== currentVideoUrl) {
+                video.querySelector('source').src = videoUrl;
+                video.load();
+                currentVideoUrl = videoUrl;
+            }
+
+            modal.classList.add('active');
+            video.play();
+        }
+
+        function closeVideoModal() {
+            const modal = document.getElementById('video-modal');
+            const video = document.getElementById('demo-video');
+            modal.classList.remove('active');
+            video.pause();
+            video.currentTime = 0;
+        }
+
+        // 点击背景关闭
+        document.getElementById('video-modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeVideoModal();
+            }
+        });
+
+        // ESC键关闭
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeVideoModal();
+            }
+        });
     </script>
 </body>
 </html>
